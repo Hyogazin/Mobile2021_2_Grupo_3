@@ -87,11 +87,10 @@ public class PlayerActivity extends AppCompatActivity {
         Bundle bundle = i.getExtras();
 
         mySongs = (ArrayList) bundle.getParcelableArrayList("songs");
-        String songName = i.getStringExtra("songname");
         position = bundle.getInt("pos", 0);
         txtsname.setSelected(true);
         Uri uri = Uri.parse(mySongs.get(position).toString());
-        sname = mySongs.get(position).getName();
+        sname = mySongs.get(position).getName().replace(".mp3", "").replace(".wav", "");;
         txtsname.setText(sname);
 
         mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
@@ -139,7 +138,7 @@ public class PlayerActivity extends AppCompatActivity {
         txtsstop.setText(endTime);
 
         final Handler handler = new Handler();
-        final int delay = 1000;
+        final int delay = 100;
 
         handler.postDelayed(new Runnable() {
             @Override

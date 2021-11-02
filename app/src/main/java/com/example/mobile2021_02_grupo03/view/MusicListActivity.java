@@ -60,7 +60,7 @@ public class MusicListActivity extends AppCompatActivity {
         final ArrayList<File> mySongs = findSong(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
         items = new String[mySongs.size()];
         for (int i = 0; i<mySongs.size(); i++){
-            items[i] = mySongs.get(i).getName().toString().replace(".mp3", "").replace(".wav", "");
+            items[i] = mySongs.get(i).getName().replace(".mp3", "").replace(".wav", "");
         }
         customAdapter customAdapter = new customAdapter();
         listView.setAdapter(customAdapter);
@@ -68,8 +68,7 @@ public class MusicListActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String songName = (String) listView.getItemAtPosition(i);
-                startActivity(new Intent(getApplicationContext(), PlayerActivity.class).putExtra("songs", mySongs).putExtra("songname", songName).putExtra("pos", i));
+                startActivity(new Intent(getApplicationContext(), PlayerActivity.class).putExtra("songs", mySongs).putExtra("pos", i));
             }
         });
     }
