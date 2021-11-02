@@ -1,29 +1,30 @@
 package com.example.mobile2021_02_grupo03.view;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mobile2021_02_grupo03.R;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
-
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MusicListActivity extends AppCompatActivity {
@@ -36,31 +37,13 @@ public class MusicListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_music_list);
 
         listView = findViewById(R.id.listViewSong);
-        runtimePermission();
-    }
-
-    public void runtimePermission(){//uso da biblioteca Dexter que permite solicitar permissões durante o uso do apps
-        Dexter.withContext(this).withPermission(Manifest.permission.READ_EXTERNAL_STORAGE).withListener(new PermissionListener() {
-            @Override
-            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                displaySongs();
-            }
-
-            @Override
-            public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
-
-            }
-
-            @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
-                permissionToken.continuePermissionRequest();
-            }
-        }).check();
+        displaySongs();
     }
 
     public ArrayList<File> findSong (File file){
         ArrayList<File> arrayList = new ArrayList<>();
         File[] files = file.listFiles();
+
         for (File singleFile: files){
             if(singleFile.isDirectory() && !singleFile.isHidden()){
                 arrayList.addAll(findSong(singleFile));
@@ -74,15 +57,11 @@ public class MusicListActivity extends AppCompatActivity {
     }
 
     void displaySongs(){
-        final ArrayList<File> mySongs = findSong(Environment.getExternalStorageDirectory());
-
+        final ArrayList<File> mySongs = findSong(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
         items = new String[mySongs.size()];
         for (int i = 0; i<mySongs.size(); i++){
             items[i] = mySongs.get(i).getName().toString().replace(".mp3", "").replace(".wav", "");
         }
-        /*ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
-        listView.setAdapter(myAdapter);*/
-
         customAdapter customAdapter = new customAdapter();
         listView.setAdapter(customAdapter);
 

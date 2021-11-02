@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="7"
+        android:layout_weight="8"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -31,12 +31,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <ImageView
-            android:id="@+id/imageview"
-            android:layout_marginBottom="8dp"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:src="@drawable/music"/>
+
+        <FrameLayout
+            android:layout_width="300dp"
+            android:layout_height="300dp">
+            <com.gauravk.audiovisualizer.visualizer.CircleLineVisualizer xmlns:custom="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/blob"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                custom:avColor="@color/colorPrimary"
+                custom:avDensity="0.7"
+                custom:avSpeed="slow"
+                custom:avType="fill" />
+            <ImageView
+                android:id="@+id/imageview"
+                android:layout_width="175dp"
+                android:layout_height="175dp"
+                android:src="@drawable/music"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -58,7 +74,7 @@
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="20dp"
                 android:layout_toLeftOf="@+id/seekbar"
-                android:text="0:10"
+                android:text="0:00"
                 android:textColor="#FFF"
                 android:textSize="14sp" />
 
@@ -81,7 +97,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3">
+        android:layout_weight="2">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -89,10 +105,11 @@
 
             <Button
                 android:id="@+id/playbtn"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/ic_play"
                 android:layout_width="70dp"
-                android:layout_height="70dp"/>
+                android:layout_height="70dp"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/ic_pause"
+                app:backgroundTint="@null" />
 
             <Button
                 android:id="@+id/btnnext"
@@ -100,7 +117,8 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
                 android:layout_toRightOf="@id/playbtn"
-                android:background="@drawable/ic_next"/>
+                android:background="@drawable/ic_next"
+                app:backgroundTint="@null"/>
 
             <Button
                 android:id="@+id/btnprevious"
@@ -108,7 +126,8 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
                 android:layout_toLeftOf="@id/playbtn"
-                android:background="@drawable/ic_previous"/>
+                android:background="@drawable/ic_previous"
+                app:backgroundTint="@null"/>
 
             <Button
                 android:id="@+id/btnforward"
@@ -117,28 +136,19 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="20dp"
                 android:layout_toRightOf="@id/btnnext"
-                android:background="@drawable/ic_forward"/>
+                android:background="@drawable/ic_forward"
+                app:backgroundTint="@null"/>
 
             <Button
                 android:id="@+id/btnrewind"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginRight="15dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginRight="15dp"
                 android:layout_toLeftOf="@id/btnprevious"
-                android:background="@drawable/ic_rewind"/>
+                android:background="@drawable/ic_rewind"
+                app:backgroundTint="@null"/>
 
-            <com.gauravk.audiovisualizer.visualizer.BarVisualizer
-                xmlns:custom="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/blast"
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:layout_alignParentBottom="true"
-                custom:avDensity="0.5"
-                custom:avType="outline"
-                custom:avWidth="4dp"
-                custom:avColor="#FF362E"
-                custom:avSpeed="normal"/>
 
         </RelativeLayout>
 
