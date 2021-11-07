@@ -6,8 +6,6 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
-import java.security.Provider;
-
 public class OnClearFromRecentService extends Service {
     @Nullable
     @Override

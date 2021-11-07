@@ -16,7 +16,8 @@
         android:theme="@style/Theme.Mobile2021_02_grupo03">
         <activity
             android:name=".view.PlayerActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:launchMode="singleTop"/>
         <activity
             android:name=".view.MusicListActivity"
             android:exported="true" />

@@ -1,13 +1,11 @@
 package com.example.mobile2021_02_grupo03.view;
 
-public class Track {
+public class Song {
     private String title;
-    private String artist;
     private int image;
 
-    public Track(String title, String artist, int image){
+    public Song(String title, String artist, int image){
         this.title = title;
-        this.artist = artist;
         this.image = image;
     }
 
@@ -17,14 +15,6 @@ public class Track {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
     }
 
     public int getImage() {
