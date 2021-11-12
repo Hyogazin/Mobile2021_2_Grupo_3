@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
 
 
     <application
@@ -16,8 +18,7 @@
         android:theme="@style/Theme.Mobile2021_02_grupo03">
         <activity
             android:name=".view.PlayerActivity"
-            android:exported="true"
-            android:launchMode="singleTop"/>
+            android:exported="true"/>
         <activity
             android:name=".view.MusicListActivity"
             android:exported="true" />

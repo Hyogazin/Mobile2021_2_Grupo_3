@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.PlayerActivity"
-    android:background="@drawable/background_img"
+    android:background="@drawable/background_player"
     android:orientation="vertical"
     android:weightSum="10">
 
@@ -39,7 +39,7 @@
                 android:id="@+id/blob"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                custom:avColor="@color/colorPrimary"
+                custom:avColor="@color/colorSecondary"
                 custom:avDensity="0.7"
                 custom:avSpeed="slow"
                 custom:avType="fill" />

@@ -47,7 +47,8 @@ public class CreateNotification {
             Intent intent = new Intent(context, PlayerActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 , intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            int notificationColor = Color.rgb(47, 35, 60);
+            int notificationColor = Color.rgb(53,32, 41);
+
 
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_music)
@@ -66,6 +67,7 @@ public class CreateNotification {
                     .setContentText("Playlist")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(pendingIntent)
+                    .setShowWhen(false)
                     .setAutoCancel(false);
 
             notificationManagerCompat.notify(1, notification.build());

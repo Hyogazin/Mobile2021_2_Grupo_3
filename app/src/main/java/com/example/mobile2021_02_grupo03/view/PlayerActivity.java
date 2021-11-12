@@ -152,16 +152,12 @@ public class PlayerActivity extends AppCompatActivity {
                 if(mediaPlayer.getCurrentPosition() >= mediaPlayer.getDuration()-500){
                     btnnext.performClick();
                 }
-                if(!mediaPlayer.isPlaying()){
-                    btnplay.setBackgroundResource(R.drawable.ic_play);
-                    CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_play);
-                }
                 handler.postDelayed(this, delay);
             }
         }, delay);
 
         seekmusic.setMax(mediaPlayer.getDuration());
-        seekmusic.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+        seekmusic.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorSecondary), PorterDuff.Mode.MULTIPLY);
         seekmusic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -225,6 +221,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void createChannel(){
+
             CharSequence name = "channel_name";
             String description = "channel_description";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -260,6 +257,8 @@ public class PlayerActivity extends AppCompatActivity {
     public void playMusic(){
         if(mediaPlayer.isPlaying()){
             mediaPlayer.pause();
+            btnplay.setBackgroundResource(R.drawable.ic_play);
+            CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_play);
         } else {
             btnplay.setBackgroundResource(R.drawable.ic_pause);
             CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_pause);

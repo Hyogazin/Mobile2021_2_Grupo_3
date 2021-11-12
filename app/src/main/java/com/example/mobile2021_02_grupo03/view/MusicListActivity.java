@@ -93,7 +93,14 @@ public class MusicListActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            PlayerActivity.notificationManager.cancelAll();
+            try {
+                PlayerActivity.notificationManager.cancelAll();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+
         }
     }
 }
