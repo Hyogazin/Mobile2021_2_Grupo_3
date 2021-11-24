@@ -2,6 +2,7 @@ package com.example.mobile2021_02_grupo03.view;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -9,6 +10,8 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -17,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,7 +28,9 @@ import android.widget.Toast;
 
 import com.example.mobile2021_02_grupo03.R;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MusicPlayerActivity extends AppCompatActivity {
 
@@ -35,12 +41,35 @@ public class MusicPlayerActivity extends AppCompatActivity {
 
 
 
-
         Button playButton = findViewById(R.id.button2);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url = "https://www.dropbox.com/s/9fop0kpaznprd77/Novo%20Tom%20%26%20Leonardo%20Gon%C3%A7alves%20-%20Brilhar%20por%20Ti.mp3?dl=0#"; // your URL here
+
+                //PASSAR ESSE CODIGO PRA DPS DO LOGIN
+                try {
+                    //criação do banco de dados
+                    SQLiteDatabase bancoDados = openOrCreateDatabase("musicApp", MODE_PRIVATE, null);
+
+                    //drop table
+                    bancoDados.execSQL("DROP TABLE songs");
+                    //bancoDados.execSQL("DROP TABLE recentSongs");
+
+                    //criação de tabelas
+                    bancoDados.execSQL("CREATE TABLE IF NOT EXISTS songs(nome VARCHAR, path VARCHAR)");
+                    bancoDados.execSQL("CREATE TABLE IF NOT EXISTS recentSongs(nome VARCHAR, path VARCHAR)");
+
+                    ArrayList<File> mySongs = getSongs(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
+                    for (int i = 0; i<mySongs.size(); i++) {
+                        String nome = mySongs.get(i).getName().replace(".mp3", "").replace(".wav", "");
+                        String path = mySongs.get(i).toString();
+                        bancoDados.execSQL("INSERT INTO songs(nome,path) VALUES('" + nome + "', '" + path + "')");
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                /*String url = "https://www.dropbox.com/s/9fop0kpaznprd77/Novo%20Tom%20%26%20Leonardo%20Gon%C3%A7alves%20-%20Brilhar%20por%20Ti.mp3?dl=0#"; // your URL here
                 MediaPlayer mediaPlayer = new MediaPlayer();
                 mediaPlayer.setAudioAttributes(
                         new AudioAttributes
@@ -57,7 +86,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                mediaPlayer.start();
+                mediaPlayer.start();*/
             }
         });
 
@@ -68,6 +97,22 @@ public class MusicPlayerActivity extends AppCompatActivity {
                 takePermissions(view);
             }
         });
+    }
+
+    public ArrayList<File> getSongs (File file){
+        ArrayList<File> arrayList = new ArrayList<>();
+        File[] files = file.listFiles();
+
+        for (File singleFile: files){
+            if(singleFile.isDirectory() && !singleFile.isHidden()){
+                arrayList.addAll(getSongs(singleFile));
+            } else{
+                if (singleFile.getName().endsWith(".mp3") || singleFile.getName().endsWith(".wav")){
+                    arrayList.add(singleFile);
+                }
+            }
+        }
+        return arrayList;
     }
 
     public void takePermissions(View view){

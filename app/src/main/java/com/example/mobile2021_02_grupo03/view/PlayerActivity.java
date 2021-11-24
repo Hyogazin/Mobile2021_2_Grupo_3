@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PorterDuff;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -29,6 +31,7 @@ import com.example.mobile2021_02_grupo03.services.OnClearFromRecentService;
 import com.gauravk.audiovisualizer.visualizer.CircleLineVisualizer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class PlayerActivity extends AppCompatActivity {
@@ -36,13 +39,16 @@ public class PlayerActivity extends AppCompatActivity {
     Button btnplay, btnnext, btnprevious, btnforward, btnrewind;
     TextView txtsname, txtsstart, txtsstop;
     SeekBar seekmusic;
-    CircleLineVisualizer visualizer;
     ImageView imageView;
 
     String sname;
     static MediaPlayer mediaPlayer;
     int position;
-    ArrayList<File> mySongs;
+
+    //ArrayList<File> mySongs;
+    String[] songPaths;
+    String[] songNames;
+
     static NotificationManager notificationManager;
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -59,7 +65,6 @@ public class PlayerActivity extends AppCompatActivity {
                     break;
                 case CreateNotification.ACTION_NEXT:
                     nextMusic();
-                    getCurrentFocus();
                     break;
             }
         }
@@ -75,17 +80,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (visualizer != null){
-            visualizer.release();
-        }
         super.onDestroy();
-
-        //
-
-        /*if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            notificationManager.cancelAll();
-        }
-        unregisterReceiver(broadcastReceiver);*/
     }
 
     @Override
@@ -93,11 +88,12 @@ public class PlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
+        /*
         //texto barra superior
         getSupportActionBar().setTitle("Now Playing");
         //botao voltar barra superior
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);*/
 
         btnplay = findViewById(R.id.playbtn);
         btnnext = findViewById(R.id.btnnext);
@@ -108,37 +104,30 @@ public class PlayerActivity extends AppCompatActivity {
         txtsstart = findViewById(R.id.txtsstart);
         txtsstop = findViewById(R.id.txtsstop);
         seekmusic = findViewById(R.id.seekbar);
-        visualizer = findViewById(R.id.blob);
         imageView = findViewById(R.id.imageview);
-
-
-       if(mediaPlayer != null){
-            mediaPlayer.stop();
-            mediaPlayer.release();
-        }
 
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
 
-        mySongs = (ArrayList) bundle.getParcelableArrayList("songs");
+//        mySongs = (ArrayList) bundle.getParcelableArrayList("songs");
+//        position = bundle.getInt("pos", 0);
+//        isNotificationClick = bundle.getInt("isNotificationClick", 0);
+//        txtsname.setSelected(true);
+//        Uri uri = Uri.parse(mySongs.get(position).toString());
+
+        songPaths = bundle.getStringArray("songPaths");
+        songNames = bundle.getStringArray("songNames");
         position = bundle.getInt("pos", 0);
         txtsname.setSelected(true);
-        Uri uri = Uri.parse(mySongs.get(position).toString());
-        sname = mySongs.get(position).getName().replace(".mp3", "").replace(".wav", "");
-        txtsname.setText(sname);
 
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
-        mediaPlayer.start();
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            createChannel();
-            CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_pause);
-            registerReceiver(broadcastReceiver, new IntentFilter("SONGS"));
-            startService(new Intent(getBaseContext(), OnClearFromRecentService.class));
-        }
+       updateLayout();
 
-        String endTime = createTime(mediaPlayer.getDuration());
-        txtsstop.setText(endTime);
+       if(!mediaPlayer.isPlaying()){
+           btnplay.setBackgroundResource(R.drawable.ic_play);
+       }
+
+
 
         final Handler handler = new Handler();
         final int delay = 100;
@@ -156,7 +145,6 @@ public class PlayerActivity extends AppCompatActivity {
             }
         }, delay);
 
-        seekmusic.setMax(mediaPlayer.getDuration());
         seekmusic.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorSecondary), PorterDuff.Mode.MULTIPLY);
         seekmusic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -181,11 +169,6 @@ public class PlayerActivity extends AppCompatActivity {
                 playMusic();
             }
         });
-
-        int audioSessionId = mediaPlayer.getAudioSessionId();
-        if(audioSessionId != -1){
-            visualizer.setAudioSessionId(audioSessionId);
-        }
 
         btnnext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -220,72 +203,96 @@ public class PlayerActivity extends AppCompatActivity {
         });
     }
 
-    public void createChannel(){
-
-            CharSequence name = "channel_name";
-            String description = "channel_description";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CreateNotification.CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-    }
-
-    public void previousMusic(){
-        mediaPlayer.stop();
-        mediaPlayer.release();
-        this.position = ((position-1)<0)?(mySongs.size()-1):(position-1);
-        Uri u = Uri.parse(mySongs.get(position).toString());
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), u);
+    public void updateLayout(){
+        if(mediaPlayer == null){
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                createChannel();
+                //CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_pause);
+                registerReceiver(broadcastReceiver, new IntentFilter("SONGS"));
+                startService(new Intent(getBaseContext(), OnClearFromRecentService.class));
+            }
+        } else {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+        Uri uri = Uri.parse(songPaths[position]);
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+        mediaPlayer.start();
+        CreateNotification.createNotification(PlayerActivity.this, songNames, songPaths, position, R.drawable.ic_pause);
+        sname = songNames[position];
+        txtsname.setText(sname);
         String endTime = createTime(mediaPlayer.getDuration());
         txtsstop.setText(endTime);
         seekmusic.setMax(mediaPlayer.getDuration());
-        sname = mySongs.get(position).getName().replace(".mp3", "").replace(".wav", "");;
-        txtsname.setText(sname);
-        mediaPlayer.start();
+    }
+
+    public void createChannel(){
+        CharSequence name = "channel_name";
+        String description = "channel_description";
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(CreateNotification.CHANNEL_ID, name, importance);
+        channel.setDescription(description);
+        notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
+    }
+
+    public void previousMusic(){
+        this.position = ((position-1)<0)?(songNames.length-1):(position-1);
+        updateLayout();
         btnplay.setBackgroundResource(R.drawable.ic_pause);
-        CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_pause);
+        CreateNotification.createNotification(PlayerActivity.this, songNames, songPaths, position, R.drawable.ic_pause);
         previousAnimation(imageView);
-        int audioSessionId = mediaPlayer.getAudioSessionId();
-        if(audioSessionId != -1){
-            visualizer.setAudioSessionId(audioSessionId);
-        }
+
+//        mediaPlayer.stop();
+//        mediaPlayer.release();
+//        this.position = ((position-1)<0)?(songNames.length-1):(position-1);
+//        Uri u = Uri.parse(songPaths[position]);
+//        mediaPlayer = MediaPlayer.create(getApplicationContext(), u);
+//        String endTime = createTime(mediaPlayer.getDuration());
+//        txtsstop.setText(endTime);
+//        seekmusic.setMax(mediaPlayer.getDuration());
+//        sname = songNames[position];
+//        txtsname.setText(sname);
+//        mediaPlayer.start();
+//        btnplay.setBackgroundResource(R.drawable.ic_pause);
+//        CreateNotification.createNotification(PlayerActivity.this, songNames, songPaths, position, R.drawable.ic_pause);
+//        previousAnimation(imageView);
     }
 
     public void playMusic(){
         if(mediaPlayer.isPlaying()){
             mediaPlayer.pause();
             btnplay.setBackgroundResource(R.drawable.ic_play);
-            CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_play);
+            CreateNotification.createNotification(PlayerActivity.this, songNames, songPaths, position, R.drawable.ic_play);
         } else {
             btnplay.setBackgroundResource(R.drawable.ic_pause);
-            CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_pause);
+            CreateNotification.createNotification(PlayerActivity.this, songNames, songPaths, position, R.drawable.ic_pause);
             mediaPlayer.start();
         }
     }
 
     public void nextMusic(){
-        mediaPlayer.stop();
-        mediaPlayer.release();
-        this.position = ((position+1)%mySongs.size());
-        Uri u = Uri.parse(mySongs.get(position).toString());
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), u);
-        sname = mySongs.get(position).getName().replace(".mp3", "").replace(".wav", "");
-        //createNotification();
-        txtsname.setText(sname);
-        String endTime = createTime(mediaPlayer.getDuration());
-        txtsstop.setText(endTime);
-        seekmusic.setMax(mediaPlayer.getDuration());
-        mediaPlayer.start();
+        this.position = ((position+1)%songNames.length);
+        updateLayout();
         btnplay.setBackgroundResource(R.drawable.ic_pause);
-        CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_pause);
+        CreateNotification.createNotification(PlayerActivity.this, songNames, songPaths, position, R.drawable.ic_pause);
         nextAnimation(imageView);
-        int audioSessionId = mediaPlayer.getAudioSessionId();
-        if(audioSessionId != -1){
-            visualizer.setAudioSessionId(audioSessionId);
-        }
+
+//        mediaPlayer.stop();
+//        mediaPlayer.release();
+//        this.position = ((position+1)%songNames.length);
+//        Uri u = Uri.parse(songPaths[position]);
+//        mediaPlayer = MediaPlayer.create(getApplicationContext(), u);
+//        sname = songNames[position];
+//        //createNotification();
+//        txtsname.setText(sname);
+//        String endTime = createTime(mediaPlayer.getDuration());
+//        txtsstop.setText(endTime);
+//        seekmusic.setMax(mediaPlayer.getDuration());
+//        mediaPlayer.start();
+//        btnplay.setBackgroundResource(R.drawable.ic_pause);
+//        CreateNotification.createNotification(PlayerActivity.this, songNames, songPaths, position, R.drawable.ic_pause);
+//        nextAnimation(imageView);
     }
 
     public void nextAnimation(View view){

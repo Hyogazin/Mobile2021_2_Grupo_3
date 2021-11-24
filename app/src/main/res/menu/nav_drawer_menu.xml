@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_item_one"
+        android:title="Todas as músicas" />
+    <item android:id="@+id/nav_item_two"
+        android:title="Músicas recentes" />
+    <item android:id="@+id/nav_item_four"
+        android:title="Sair" />
+    <item android:id="@+id/nav_item_five"
+        android:title="Item 5" />
+</menu>

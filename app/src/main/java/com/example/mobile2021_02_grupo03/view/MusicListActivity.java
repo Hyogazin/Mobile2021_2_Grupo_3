@@ -1,10 +1,18 @@
 package com.example.mobile2021_02_grupo03.view;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,51 +21,86 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.mobile2021_02_grupo03.R;
+import com.google.android.material.navigation.NavigationView;
+
 import java.io.File;
 import java.util.ArrayList;
 
 public class MusicListActivity extends AppCompatActivity {
     ListView listView;
     String[] items;
+    String[] musicNames;
+    String[] musicPaths;
+
+    private Toolbar toolbar;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_list);
 
-        listView = findViewById(R.id.listViewSong);
-        displaySongs();
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
+        drawerLayout.addDrawerListener(toggle);
+
+        toggle.syncState();
+
+
+
+        try {
+            SQLiteDatabase bancoDados = openOrCreateDatabase("musicApp", MODE_PRIVATE, null);
+
+            listView = findViewById(R.id.listViewSong);
+            displaySongs(bancoDados);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
-    public ArrayList<File> findSong (File file){
-        ArrayList<File> arrayList = new ArrayList<>();
-        File[] files = file.listFiles();
+    void displaySongs(SQLiteDatabase bancoDados){
+        Cursor cursor = bancoDados.rawQuery("SELECT nome, path FROM songs", null);
+        int indiceNome = cursor.getColumnIndex("nome");
+        int indicepath = cursor.getColumnIndex("path");
 
-        for (File singleFile: files){
-            if(singleFile.isDirectory() && !singleFile.isHidden()){
-                arrayList.addAll(findSong(singleFile));
-            } else{
-                if (singleFile.getName().endsWith(".mp3") || singleFile.getName().endsWith(".wav")){
-                    arrayList.add(singleFile);
-                }
-            }
+        musicNames = new String[cursor.getCount()];
+        musicPaths = new String[cursor.getCount()];
+        cursor.moveToFirst();
+        for(int i = 0; i<cursor.getCount(); i++){
+            musicNames[i] = cursor.getString(indiceNome);
+            musicPaths[i] = cursor.getString(indicepath);
+            cursor.moveToNext();
         }
-        return arrayList;
-    }
 
-    void displaySongs(){
-        final ArrayList<File> mySongs = findSong(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
-        items = new String[mySongs.size()];
-        for (int i = 0; i<mySongs.size(); i++){
-            items[i] = mySongs.get(i).getName().replace(".mp3", "").replace(".wav", "");
+        cursor = bancoDados.rawQuery("SELECT DISTINCT nome, path FROM recentSongs", null);
+        indiceNome = cursor.getColumnIndex("nome");
+        indicepath = cursor.getColumnIndex("path");
+
+        cursor.moveToFirst();
+        for(int i = 0; i<cursor.getCount(); i++){
+            Log.i("RESULTADO:", cursor.getString(indiceNome));
+            Log.i("RESULTADO:", cursor.getString(indicepath));
+            cursor.moveToNext();
         }
+
         customAdapter customAdapter = new customAdapter();
         listView.setAdapter(customAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                startActivity(new Intent(getApplicationContext(), PlayerActivity.class).putExtra("songs", mySongs).putExtra("pos", i));
+                startActivity(new Intent(getApplicationContext(), PlayerActivity.class).putExtra("songNames", musicNames).putExtra("songPaths", musicPaths).putExtra("pos", i));
+                try {
+                    bancoDados.execSQL("INSERT INTO recentSongs(nome,path) VALUES('" + musicNames[i] + "', '" + musicPaths[i] + "')");
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -66,7 +109,7 @@ public class MusicListActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return items.length;
+            return musicNames.length;
         }
 
         @Override
@@ -84,7 +127,7 @@ public class MusicListActivity extends AppCompatActivity {
             View myView = getLayoutInflater().inflate(R.layout.list_item, null);
             TextView textsong = myView.findViewById(R.id.txtsongname);
             textsong.setSelected(true);
-            textsong.setText(items[i]);
+            textsong.setText(musicNames[i]);
             return myView;
         }
     }

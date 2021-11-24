@@ -1,10 +1,16 @@
 package com.example.mobile2021_02_grupo03.view;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.core.app.NotificationCompat;
@@ -23,11 +29,11 @@ public class CreateNotification {
     public static final String ACTION_PLAY = "action_play";
     public static final String ACTION_NEXT = "action_next";
 
-    public static void createNotification(Context context, ArrayList<File> mySongs, int position, int playbutton){
+    public static void createNotification(Context context, String[] musicNames, String[] musicPaths, int position, int playbutton){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
 
-            String sname = mySongs.get(position).getName().replace(".mp3", "").replace(".wav", "");
+            String sname = musicNames[position];
             MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(context, "tag");
 
             //Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.musicicon);
@@ -45,12 +51,12 @@ public class CreateNotification {
             PendingIntent pendingIntentNext = PendingIntent.getBroadcast(context, 0 , intentNext, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent intent = new Intent(context, PlayerActivity.class);
+            intent.putExtra("songNames", musicNames).putExtra("songPaths", musicPaths).putExtra("pos", position);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 , intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             int notificationColor = Color.rgb(53,32, 41);
 
-
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL_ID)
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_music)
                     //.setLargeIcon(icon)
                     .setColor(notificationColor)
@@ -70,7 +76,12 @@ public class CreateNotification {
                     .setShowWhen(false)
                     .setAutoCancel(false);
 
-            notificationManagerCompat.notify(1, notification.build());
+            Notification notification = builder.build();
+            if(!(playbutton == R.drawable.ic_play)){
+                notification.flags = NotificationCompat.FLAG_NO_CLEAR;
+            }
+
+            notificationManagerCompat.notify(1, notification);
         }
     }
 }
