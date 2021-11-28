@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -19,6 +20,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.BaseColumns;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -27,10 +29,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mobile2021_02_grupo03.R;
+import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBContract;
+import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class MusicPlayerActivity extends AppCompatActivity {
 
@@ -39,34 +47,24 @@ public class MusicPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_player);
 
-
-
         Button playButton = findViewById(R.id.button2);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 //PASSAR ESSE CODIGO PRA DPS DO LOGIN
-                try {
-                    //criação do banco de dados
-                    SQLiteDatabase bancoDados = openOrCreateDatabase("musicApp", MODE_PRIVATE, null);
+                MusicAppDBHelper dbHelper = new MusicAppDBHelper(getApplicationContext());
+                SQLiteDatabase dbwrite = dbHelper.getWritableDatabase();
+                SQLiteDatabase dbread = dbHelper.getReadableDatabase();
 
-                    //drop table
-                    bancoDados.execSQL("DROP TABLE songs");
-                    //bancoDados.execSQL("DROP TABLE recentSongs");
+                dbHelper.dropTables(dbwrite);
+                dbHelper.createTables(dbwrite);
 
-                    //criação de tabelas
-                    bancoDados.execSQL("CREATE TABLE IF NOT EXISTS songs(nome VARCHAR, path VARCHAR)");
-                    bancoDados.execSQL("CREATE TABLE IF NOT EXISTS recentSongs(nome VARCHAR, path VARCHAR)");
-
-                    ArrayList<File> mySongs = getSongs(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
-                    for (int i = 0; i<mySongs.size(); i++) {
-                        String nome = mySongs.get(i).getName().replace(".mp3", "").replace(".wav", "");
-                        String path = mySongs.get(i).toString();
-                        bancoDados.execSQL("INSERT INTO songs(nome,path) VALUES('" + nome + "', '" + path + "')");
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
+                ArrayList<File> mySongs = getSongsFromStorage(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
+                for (int i = 0; i<mySongs.size(); i++) {
+                    String name = mySongs.get(i).getName().replace(".mp3", "").replace(".wav", "");
+                    String path = mySongs.get(i).toString();
+                    dbHelper.insert(dbwrite, MusicAppDBContract.songsTable.TABLE_NAME, name, path);
                 }
 
                 /*String url = "https://www.dropbox.com/s/9fop0kpaznprd77/Novo%20Tom%20%26%20Leonardo%20Gon%C3%A7alves%20-%20Brilhar%20por%20Ti.mp3?dl=0#"; // your URL here
@@ -99,13 +97,13 @@ public class MusicPlayerActivity extends AppCompatActivity {
         });
     }
 
-    public ArrayList<File> getSongs (File file){
+    public ArrayList<File> getSongsFromStorage (File file){
         ArrayList<File> arrayList = new ArrayList<>();
         File[] files = file.listFiles();
 
         for (File singleFile: files){
             if(singleFile.isDirectory() && !singleFile.isHidden()){
-                arrayList.addAll(getSongs(singleFile));
+                arrayList.addAll(getSongsFromStorage(singleFile));
             } else{
                 if (singleFile.getName().endsWith(".mp3") || singleFile.getName().endsWith(".wav")){
                     arrayList.add(singleFile);
@@ -118,7 +116,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
     public void takePermissions(View view){
         if(isPermissionGranted()){
             Toast.makeText(this, "Permission Already Granted", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), MusicListActivity.class);
+            Intent intent = new Intent(getApplicationContext(), RecentMusicListActivity.class);
             startActivity(intent);
         } else{
             takePermission();

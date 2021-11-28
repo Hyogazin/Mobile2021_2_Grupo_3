@@ -9,10 +9,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.MenuItem;
@@ -28,11 +26,7 @@ import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBContract;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBHelper;
 import com.google.android.material.navigation.NavigationView;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-public class MusicListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class RecentMusicListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     ListView listView;
     long[] musicIds;
     String[] musicNames;
@@ -44,7 +38,7 @@ public class MusicListActivity extends AppCompatActivity implements NavigationVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_music_list);
+        setContentView(R.layout.activity_recent_music_list);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -56,15 +50,32 @@ public class MusicListActivity extends AppCompatActivity implements NavigationVi
 
         toggle.syncState();
 
-
         MusicAppDBHelper dbHelper = new MusicAppDBHelper(getApplicationContext());
 
-        listView = findViewById(R.id.listViewSong);
         displaySongs(dbHelper);
-    }
 
+        customAdapter customAdapter = new customAdapter();
+
+        listView = findViewById(R.id.listViewSong);
+        listView.setAdapter(customAdapter);
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                startActivity(new Intent(getApplicationContext(), PlayerActivity.class).putExtra("songNames", musicNames).putExtra("songPaths", musicPaths).putExtra("pos", i));
+
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                dbHelper.insert(db, MusicAppDBContract.recentSongsTable.TABLE_NAME, musicNames[i], musicPaths[i]);
+
+                displaySongs(dbHelper);
+
+                listView.invalidateViews();
+            }
+        });
+    }
     void displaySongs(MusicAppDBHelper dbHelper){
-        SQLiteDatabase dbwrite = dbHelper.getWritableDatabase();
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         String[] colunas = {
                 BaseColumns._ID,
@@ -72,13 +83,13 @@ public class MusicListActivity extends AppCompatActivity implements NavigationVi
                 MusicAppDBContract.songsTable.COLUMN_NAME_PATH
         };
 
-        Cursor cursor = dbHelper.select(dbwrite, MusicAppDBContract.songsTable.TABLE_NAME, colunas);
+        Cursor cursor = dbHelper.select(db, MusicAppDBContract.recentSongsTable.TABLE_NAME, colunas);
 
         musicIds = new long[cursor.getCount()];
         musicNames = new String[cursor.getCount()];
         musicPaths = new String[cursor.getCount()];
 
-        cursor.moveToFirst();
+        cursor.moveToLast();
         for(int i = 0; i<cursor.getCount(); i++){
             long itemId = cursor.getLong(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable._ID));
             String itemName = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable.COLUMN_NAME_NAME));
@@ -86,49 +97,8 @@ public class MusicListActivity extends AppCompatActivity implements NavigationVi
             musicIds[i] = itemId;
             musicNames[i] = itemName;
             musicPaths[i] = itemPath;
-
-            cursor.moveToNext();
+            cursor.moveToPrevious();
         }
-
-        cursor = dbHelper.select(dbwrite, MusicAppDBContract.recentSongsTable.TABLE_NAME, colunas);
-        cursor.moveToFirst();
-        for(int i = 0; i<cursor.getCount(); i++){
-            int name = cursor.getColumnIndex(MusicAppDBContract.recentSongsTable.COLUMN_NAME_NAME);
-            int path = cursor.getColumnIndex(MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH);
-            Log.i("RECENT:", "#################");
-            Log.i("RECENT:", cursor.getString(name));
-            Log.i("RECENT:", cursor.getString(path));
-            Log.i("RECENT:", "#################");
-
-            cursor.moveToNext();
-        }
-
-        /*
-        cursor = bancoDados.rawQuery("SELECT DISTINCT nome, path FROM recentSongs", null);
-        indiceNome = cursor.getColumnIndex("nome");
-        indicepath = cursor.getColumnIndex("path");
-
-        cursor.moveToFirst();
-        for(int i = 0; i<cursor.getCount(); i++){
-            Log.i("RESULTADO:", cursor.getString(indiceNome));
-            Log.i("RESULTADO:", cursor.getString(indicepath));
-            cursor.moveToNext();
-        }*/
-
-        customAdapter customAdapter = new customAdapter();
-        listView.setAdapter(customAdapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                startActivity(new Intent(getApplicationContext(), PlayerActivity.class).putExtra("songNames", musicNames).putExtra("songPaths", musicPaths).putExtra("pos", i));
-                try {
-                    dbHelper.insert(dbwrite, MusicAppDBContract.recentSongsTable.TABLE_NAME, musicNames[i], musicPaths[i]);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     @Override
@@ -136,7 +106,7 @@ public class MusicListActivity extends AppCompatActivity implements NavigationVi
         return false;
     }
 
-    class customAdapter extends BaseAdapter{
+    class customAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {

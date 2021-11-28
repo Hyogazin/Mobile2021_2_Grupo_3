@@ -2,6 +2,8 @@ package com.example.mobile2021_02_grupo03.view;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -49,6 +51,8 @@ public class PlayerActivity extends AppCompatActivity {
     String[] songPaths;
     String[] songNames;
 
+    private Toolbar toolbar;
+
     static NotificationManager notificationManager;
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -88,12 +92,13 @@ public class PlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
-        /*
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         //texto barra superior
         getSupportActionBar().setTitle("Now Playing");
         //botao voltar barra superior
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);*/
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         btnplay = findViewById(R.id.playbtn);
         btnnext = findViewById(R.id.btnnext);
