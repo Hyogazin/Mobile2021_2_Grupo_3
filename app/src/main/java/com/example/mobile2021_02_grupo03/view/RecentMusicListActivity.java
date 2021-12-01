@@ -12,7 +12,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +55,7 @@ public class RecentMusicListActivity extends AppCompatActivity implements Naviga
 
         customAdapter customAdapter = new customAdapter();
 
-        listView = findViewById(R.id.listViewSong);
+        listView = findViewById(R.id.recyclerView);
         listView.setAdapter(customAdapter);
 
 
@@ -126,7 +125,7 @@ public class RecentMusicListActivity extends AppCompatActivity implements Naviga
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             View myView = getLayoutInflater().inflate(R.layout.list_item, null);
-            TextView textsong = myView.findViewById(R.id.txtsongname);
+            TextView textsong = myView.findViewById(R.id.txtSongName);
             textsong.setSelected(true);
             textsong.setText(musicNames[i]);
             return myView;

@@ -26,46 +26,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <ListView
-                android:id="@+id/listViewSong"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="8"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="10.0sp"
-                android:padding="8dp">
-            </ListView>
+                android:padding="8dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:background="@color/colorPrimary"
-                android:layout_weight="0.5">
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:id="@+id/txtsn"
-                        android:ellipsize="marquee"
-                        android:layout_centerInParent="true"
-                        android:marqueeRepeatLimit="marquee_forever"
-                        android:singleLine="true"
-                        android:text="Song name"
-                        android:textColor="#FFF"
-                        android:textSize="22sp"
-                        android:textAlignment="center"
-                        android:textStyle="italic"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                </RelativeLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@color/colorPrimary"
-                android:layout_weight="1.5">
+                android:layout_weight="2"
+                android:id="@+id/listLayoutPlayer"
+                android:visibility="invisible">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -73,12 +49,31 @@
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp">
 
+                    <TextView
+                        android:id="@+id/listLayoutSongName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:padding="5dp"
+                        android:singleLine="true"
+                        android:text="Song name"
+                        android:textAlignment="center"
+                        android:textColor="#FFF"
+                        android:textSize="18sp" />
+
                     <Button
-                        android:id="@+id/playbtn"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_centerVertical="true"
-                        android:layout_toLeftOf="@id/btnnext"
+                        android:id="@+id/listLayoutPlayBtn"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_marginTop="55dp"
+                        android:layout_centerHorizontal="true"
                         android:backgroundTint="@color/white"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
@@ -86,31 +81,22 @@
                         app:backgroundTint="@null" />
 
                     <Button
-                        android:id="@+id/btnnext"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentRight="true"
+                        android:id="@+id/listLayoutBtnNext"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="60dp"
+                        android:layout_toRightOf="@+id/listLayoutPlayBtn"
                         android:background="@drawable/ic_next"
                         app:backgroundTint="@null"/>
 
                     <Button
-                        android:id="@+id/btnprevious"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_centerVertical="true"
-                        android:layout_toLeftOf="@id/playbtn"
+                        android:id="@+id/listLayoutBtnPrevious"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="60dp"
+                        android:layout_toLeftOf="@id/listLayoutPlayBtn"
                         android:background="@drawable/ic_previous"
                         app:backgroundTint="@null"/>
-
-                    <ImageView
-                        android:id="@+id/imageview"
-                        android:layout_centerVertical="true"
-                        android:layout_width="85dp"
-                        android:layout_height="85dp"
-                        android:layout_alignParentLeft="true"
-                        android:src="@drawable/music"
-                        android:layout_gravity="center"/>
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>

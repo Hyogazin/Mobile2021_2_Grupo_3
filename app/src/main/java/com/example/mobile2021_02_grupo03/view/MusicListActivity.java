@@ -4,50 +4,104 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mobile2021_02_grupo03.R;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBContract;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBHelper;
+import com.example.mobile2021_02_grupo03.adapter.MusicAdapter;
+import com.example.mobile2021_02_grupo03.model.Song;
+import com.example.mobile2021_02_grupo03.services.MediaPlayerService;
 import com.google.android.material.navigation.NavigationView;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
-public class MusicListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
-    ListView listView;
-    long[] musicIds;
-    String[] musicNames;
-    String[] musicPaths;
+public class MusicListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static RecyclerView recyclerView;
+
+    public static String selectedName = "";
+    public static int selectedPosition = -1;
+    public static int selectedLayout = 1;
+    static TextView txtsname;
+    static Button btnplay;
+    ArrayList<Song> songs = new ArrayList<>();
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_list);
 
+        if (PlayerActivity.mediaPlayer != null){
+            findViewById(R.id.listLayoutPlayer).setVisibility(View.VISIBLE);
+        }
+
+        btnplay = findViewById(R.id.listLayoutPlayBtn);
+        Button btnnext = findViewById(R.id.listLayoutBtnNext);
+        Button btnprevious = findViewById(R.id.listLayoutBtnPrevious);
+        txtsname = findViewById(R.id.listLayoutSongName);
+        findViewById(R.id.listLayoutPlayer).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //recyclerView.findViewHolderForAdapterPosition(selectedPosition).itemView.performClick();
+
+                findViewById(R.id.listLayoutPlayer).setVisibility(View.VISIBLE);
+
+                recyclerView.scrollToPosition(selectedPosition);
+                txtsname.setText(songs.get(selectedPosition).getTitle());
+                txtsname.setSelected(true);
+
+                if(selectedName.equals(songs.get(selectedPosition).getTitle())){
+                    startActivity(new Intent(getApplicationContext(), PlayerActivity.class).putExtra("mySongs", songs).putExtra("position", selectedPosition));
+                } else{
+                    btnplay.setBackgroundResource(R.drawable.ic_pause);
+                    if(PlayerActivity.mediaPlayer != null){
+                        PlayerActivity.mediaPlayer.stop();
+                        PlayerActivity.mediaPlayer.release();
+                    }
+                    Uri uri = Uri.parse(songs.get(selectedPosition).getPath());
+                    PlayerActivity.mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+                    PlayerActivity.mediaPlayer.start();
+                }
+                selectedName = songs.get(selectedPosition).getTitle();
+
+                MusicAppDBHelper dbHelper = new MusicAppDBHelper(getApplicationContext());
+                SQLiteDatabase dbwrite = dbHelper.getWritableDatabase();
+                dbHelper.insert(dbwrite, MusicAppDBContract.recentSongsTable.TABLE_NAME, songs.get(selectedPosition).getTitle(), songs.get(selectedPosition).getPath());
+                if(selectedLayout == 2){
+                    selectedLayout = 1;
+                    selectList(selectedLayout);
+                } else{
+                    selectedLayout = 0;
+                    selectedPosition = selectedPosition;
+                }
+            }
+        });
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        navigationView = (NavigationView) findViewById(R.id.navView);
+        navigationView.setNavigationItemSelectedListener(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.musicListId);
 
@@ -56,76 +110,139 @@ public class MusicListActivity extends AppCompatActivity implements NavigationVi
 
         toggle.syncState();
 
-
         MusicAppDBHelper dbHelper = new MusicAppDBHelper(getApplicationContext());
 
-        listView = findViewById(R.id.listViewSong);
-        displaySongs(dbHelper);
+        selectedLayout = 1;
+        selectList(selectedLayout);
+
+
+        btnprevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectedPosition = ((selectedPosition-1)<0)?(songs.size()-1):(selectedPosition-1);
+                btnplay.setBackgroundResource(R.drawable.ic_pause);
+                recyclerView.findViewHolderForAdapterPosition(selectedPosition).itemView.performClick();
+            }
+        });
+
+        btnplay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(PlayerActivity.mediaPlayer.isPlaying()){
+                    PlayerActivity.mediaPlayer.pause();
+                    btnplay.setBackgroundResource(R.drawable.ic_play);
+                    //CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_play);
+                } else {
+                    btnplay.setBackgroundResource(R.drawable.ic_pause);
+                    //CreateNotification.createNotification(PlayerActivity.this, mySongs, position, R.drawable.ic_pause);
+                    PlayerActivity.mediaPlayer.start();
+                }
+            }
+        });
+
+        btnnext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnplay.setBackgroundResource(R.drawable.ic_pause);
+                selectedPosition = ((selectedPosition+1)%songs.size());
+                recyclerView.findViewHolderForAdapterPosition(selectedPosition).itemView.performClick();
+            }
+        });
     }
 
-    void displaySongs(MusicAppDBHelper dbHelper){
+    void selectList(int option){
+        MusicAppDBHelper dbHelper = new MusicAppDBHelper(getApplicationContext());
+        SQLiteDatabase dbwrite = dbHelper.getWritableDatabase();
+        songs.clear();
+        String[] colunas;
+        Cursor cursor;
+        switch (option){
+            case 2:
+                colunas = new String[]{
+                        BaseColumns._ID,
+                        MusicAppDBContract.recentSongsTable.COLUMN_NAME_NAME,
+                        MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH
+                };
+                cursor = dbHelper.select(dbwrite, MusicAppDBContract.recentSongsTable.TABLE_NAME, colunas);
+                cursor.moveToLast();
+                for(int i = 0; i<cursor.getCount(); i++){
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(MusicAppDBContract.recentSongsTable._ID));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.recentSongsTable.COLUMN_NAME_NAME));
+                    String path = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH));
+                    Song song = new Song(id, name, path);
+                    songs.add(song);
+                    if(selectedName.equals(name)){
+                        selectedPosition = i;
+                    }
+                    cursor.moveToPrevious();
+                    getSupportActionBar().setTitle("Músicas Recentes");
+                }
+                break;
+            default:
+                colunas = new String[]{
+                        BaseColumns._ID,
+                        MusicAppDBContract.songsTable.COLUMN_NAME_NAME,
+                        MusicAppDBContract.songsTable.COLUMN_NAME_PATH
+                };
+                cursor = dbHelper.select(dbwrite, MusicAppDBContract.songsTable.TABLE_NAME, colunas, MusicAppDBContract.songsTable.COLUMN_NAME_NAME);
+                cursor.moveToFirst();
+                for(int i = 0; i<cursor.getCount(); i++){
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable._ID));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable.COLUMN_NAME_NAME));
+                    String path = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable.COLUMN_NAME_PATH));
+                    Song song = new Song(id, name, path);
+                    songs.add(song);
+                    if(selectedName.equals(name)){
+                        selectedPosition = i;
+                    }
+                    cursor.moveToNext();
+                    getSupportActionBar().setTitle("Todas as Músicas");
+                }
+                break;
+        }
+        displaySongs();
+    }
+
+    void displaySongs(){
+        MusicAppDBHelper dbHelper = new MusicAppDBHelper(getApplicationContext());
         SQLiteDatabase dbwrite = dbHelper.getWritableDatabase();
 
-        String[] colunas = {
-                BaseColumns._ID,
-                MusicAppDBContract.songsTable.COLUMN_NAME_NAME,
-                MusicAppDBContract.songsTable.COLUMN_NAME_PATH
-        };
-
-        Cursor cursor = dbHelper.select(dbwrite, MusicAppDBContract.songsTable.TABLE_NAME, colunas);
-
-        musicIds = new long[cursor.getCount()];
-        musicNames = new String[cursor.getCount()];
-        musicPaths = new String[cursor.getCount()];
-
-        cursor.moveToFirst();
-        for(int i = 0; i<cursor.getCount(); i++){
-            long itemId = cursor.getLong(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable._ID));
-            String itemName = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable.COLUMN_NAME_NAME));
-            String itemPath = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable.COLUMN_NAME_PATH));
-            musicIds[i] = itemId;
-            musicNames[i] = itemName;
-            musicPaths[i] = itemPath;
-
-            cursor.moveToNext();
-        }
-
-        cursor = dbHelper.select(dbwrite, MusicAppDBContract.recentSongsTable.TABLE_NAME, colunas);
-        cursor.moveToFirst();
-        for(int i = 0; i<cursor.getCount(); i++){
-            int name = cursor.getColumnIndex(MusicAppDBContract.recentSongsTable.COLUMN_NAME_NAME);
-            int path = cursor.getColumnIndex(MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH);
-            Log.i("RECENT:", "#################");
-            Log.i("RECENT:", cursor.getString(name));
-            Log.i("RECENT:", cursor.getString(path));
-            Log.i("RECENT:", "#################");
-
-            cursor.moveToNext();
-        }
-
-        /*
-        cursor = bancoDados.rawQuery("SELECT DISTINCT nome, path FROM recentSongs", null);
-        indiceNome = cursor.getColumnIndex("nome");
-        indicepath = cursor.getColumnIndex("path");
-
-        cursor.moveToFirst();
-        for(int i = 0; i<cursor.getCount(); i++){
-            Log.i("RESULTADO:", cursor.getString(indiceNome));
-            Log.i("RESULTADO:", cursor.getString(indicepath));
-            cursor.moveToNext();
-        }*/
-
-        customAdapter customAdapter = new customAdapter();
-        listView.setAdapter(customAdapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        recyclerView = findViewById(R.id.recyclerView);
+        MusicAdapter musicAdapter = new MusicAdapter(songs);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(musicAdapter);
+        musicAdapter.setListener(new MusicAdapter.MusicAdapterListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                startActivity(new Intent(getApplicationContext(), PlayerActivity.class).putExtra("songNames", musicNames).putExtra("songPaths", musicPaths).putExtra("pos", i));
-                try {
-                    dbHelper.insert(dbwrite, MusicAppDBContract.recentSongsTable.TABLE_NAME, musicNames[i], musicPaths[i]);
-                }catch (Exception e){
-                    e.printStackTrace();
+            public void onItemClick(int position) {
+                findViewById(R.id.listLayoutPlayer).setVisibility(View.VISIBLE);
+
+                recyclerView.scrollToPosition(position);
+                txtsname.setText(songs.get(position).getTitle());
+                txtsname.setSelected(true);
+
+                if(selectedName.equals(songs.get(position).getTitle())){
+                    startActivity(new Intent(getApplicationContext(), PlayerActivity.class).putExtra("mySongs", songs).putExtra("position", position));
+                } else{
+                    btnplay.setBackgroundResource(R.drawable.ic_pause);
+                    if(PlayerActivity.mediaPlayer != null){
+                        PlayerActivity.mediaPlayer.stop();
+                        PlayerActivity.mediaPlayer.release();
+                    }
+                    Uri uri = Uri.parse(songs.get(position).getPath());
+                    PlayerActivity.mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+                    PlayerActivity.mediaPlayer.start();
+                }
+                selectedName = songs.get(position).getTitle();
+
+
+                dbHelper.insert(dbwrite, MusicAppDBContract.recentSongsTable.TABLE_NAME, songs.get(position).getTitle(), songs.get(position).getPath());
+                if(selectedLayout == 2){
+                    selectedLayout = 1;
+                    selectList(selectedLayout);
+                } else{
+                    selectedLayout = 0;
+                    selectedPosition = position;
                 }
             }
         });
@@ -133,34 +250,26 @@ public class MusicListActivity extends AppCompatActivity implements NavigationVi
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
-    }
-
-    class customAdapter extends BaseAdapter{
-
-        @Override
-        public int getCount() {
-            return musicNames.length;
+        switch (item.getItemId()) {
+            case R.id.nav_item_all_musics: {
+                selectedLayout = 1;
+                selectList(selectedLayout);
+                break;
+            }
+            case R.id.nav_item_recent_musics: {
+                selectedLayout = 2;
+                selectList(selectedLayout);
+                break;
+            }
+            default: {
+                Toast.makeText(this, "Menu Default", Toast.LENGTH_SHORT).show();
+                break;
+            }
         }
 
-        @Override
-        public Object getItem(int i) {
-            return null;
-        }
+        drawerLayout.closeDrawer(GravityCompat.START);
 
-        @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            View myView = getLayoutInflater().inflate(R.layout.list_item, null);
-            TextView textsong = myView.findViewById(R.id.txtsongname);
-            textsong.setSelected(true);
-            textsong.setText(musicNames[i]);
-            return myView;
-        }
+        return true;
     }
 
     @Override

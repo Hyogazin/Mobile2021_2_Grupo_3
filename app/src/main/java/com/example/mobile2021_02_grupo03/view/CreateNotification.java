@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.mobile2021_02_grupo03.R;
+import com.example.mobile2021_02_grupo03.model.Song;
 import com.example.mobile2021_02_grupo03.services.NotificationActionService;
 
 import java.io.File;
@@ -29,11 +30,11 @@ public class CreateNotification {
     public static final String ACTION_PLAY = "action_play";
     public static final String ACTION_NEXT = "action_next";
 
-    public static void createNotification(Context context, String[] musicNames, String[] musicPaths, int position, int playbutton){
+    public static void createNotification(Context context, ArrayList<Song> mySongs, int position, int playbutton){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
 
-            String sname = musicNames[position];
+            String sname = mySongs.get(position).getTitle();
             MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(context, "tag");
 
             //Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.musicicon);
@@ -51,7 +52,7 @@ public class CreateNotification {
             PendingIntent pendingIntentNext = PendingIntent.getBroadcast(context, 0 , intentNext, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent intent = new Intent(context, PlayerActivity.class);
-            intent.putExtra("songNames", musicNames).putExtra("songPaths", musicPaths).putExtra("pos", position);
+            intent.putExtra("mySongs", mySongs).putExtra("position", position);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 , intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             int notificationColor = Color.rgb(53,32, 41);

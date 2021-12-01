@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/nav_item_one"
+    <item android:id="@+id/nav_item_all_musics"
         android:title="Todas as músicas" />
-    <item android:id="@+id/nav_item_two"
+    <item android:id="@+id/nav_item_recent_musics"
         android:title="Músicas recentes" />
     <item android:id="@+id/nav_item_four"
         android:title="Sair" />

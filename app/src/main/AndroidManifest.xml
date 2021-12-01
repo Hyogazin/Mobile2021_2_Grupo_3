@@ -43,6 +43,7 @@
         <receiver android:name=".services.NotificationActionService" />
 
         <service android:name=".services.OnClearFromRecentService" />
+        <service android:name=".services.MediaPlayerService" />
     </application>
 
 </manifest>

@@ -62,7 +62,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
 
                 ArrayList<File> mySongs = getSongsFromStorage(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
                 for (int i = 0; i<mySongs.size(); i++) {
-                    String name = mySongs.get(i).getName().replace(".mp3", "").replace(".wav", "");
+                    String name = mySongs.get(i).getName().replace(".mp3", "").replace(".wav", "").replace("'", "");
                     String path = mySongs.get(i).toString();
                     dbHelper.insert(dbwrite, MusicAppDBContract.songsTable.TABLE_NAME, name, path);
                 }
@@ -116,7 +116,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
     public void takePermissions(View view){
         if(isPermissionGranted()){
             Toast.makeText(this, "Permission Already Granted", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), RecentMusicListActivity.class);
+            Intent intent = new Intent(getApplicationContext(), MusicListActivity.class);
             startActivity(intent);
         } else{
             takePermission();
