@@ -99,7 +99,7 @@ public class SongListPresenter {
             songListActivity.startActivity(new Intent(songListActivity, SongPlayerActivity.class));
         } else{
             mediaPlayerCreate(position);
-            songListActivity.pauseButtonResource();
+            songListActivity.playButtonResource();
             selectedName = selectedList.get(position).getTitle();
         }
         insertRecentSong(selectedName, selectedList.get(position).getPath());
@@ -113,6 +113,7 @@ public class SongListPresenter {
             }
             getAllSongsFromSQLite();
         } else{
+            selectedLayout = 0;
             selectedPosition = position;
         }
     }

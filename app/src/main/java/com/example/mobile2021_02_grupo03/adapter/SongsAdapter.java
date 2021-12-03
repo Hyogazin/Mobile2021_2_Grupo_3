@@ -57,7 +57,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder>{
             @Override
             public void onClick(View view) {
                 listener.onItemClick(holder.getAdapterPosition());
-                songListPresenter.selectedLayout = 0;
                 notifyDataSetChanged();
             }
         });

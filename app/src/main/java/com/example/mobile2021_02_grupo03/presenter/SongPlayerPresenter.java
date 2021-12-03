@@ -68,7 +68,6 @@ public class SongPlayerPresenter {
         SongListActivity.recyclerView.getAdapter().notifyDataSetChanged();
         SongListActivity.recyclerView.scrollToPosition(SongListPresenter.selectedPosition);
         SongListActivity.txtsname.setText(SongListPresenter.selectedName);
-        //COLOCAR PRA MUDAR O PLAYER DA LISTA AQUI
     }
 
     public void playMusic(){

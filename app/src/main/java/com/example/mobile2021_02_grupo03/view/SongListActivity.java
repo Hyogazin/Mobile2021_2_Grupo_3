@@ -43,6 +43,7 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_music_list);
 
         toolbar = findViewById(R.id.toolbar);
@@ -63,24 +64,30 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        if (songListPresenter.mediaPlayer == null){
+        if (songListPresenter.mediaPlayer == null) {
             listLayoutPlayer.setVisibility(View.INVISIBLE);
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,0,10);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 10);
             recyclerView.setLayoutParams(param);
         } else{
+            if(songListPresenter.mediaPlayer.isPlaying()){
+                playButtonResource();
+            } else{
+                pauseButtonResource();
+            }
             listLayoutPlayer.setVisibility(View.VISIBLE);
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,0,8);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 8);
             recyclerView.setLayoutParams(param);
             updateLayout(songListPresenter.selectedName);
         }
 
+        songListPresenter.selectedLayout = 0;
         songListPresenter.getAllSongsFromSQLite();
 
         listLayoutPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listLayoutPlayer.setVisibility(View.VISIBLE);
-                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,0,8);
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 8);
                 recyclerView.setLayoutParams(param);
                 recyclerView.scrollToPosition(songListPresenter.selectedPosition);
                 songListPresenter.onPlayerClick();
@@ -90,7 +97,7 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
         btnPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pauseButtonResource();
+                playButtonResource();
                 int position = songListPresenter.mediaPlayerPrevPosition();
                 recyclerView.scrollToPosition(position);
                 Handler handler = new Handler();
@@ -105,11 +112,11 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(songListPresenter.mediaPlayer.isPlaying()){
-                    playButtonResource();
+                if (songListPresenter.mediaPlayer.isPlaying()) {
+                    pauseButtonResource();
                     songListPresenter.mediaPlayer.pause();
                 } else {
-                    pauseButtonResource();
+                    playButtonResource();
                     songListPresenter.mediaPlayer.start();
                 }
             }
@@ -118,7 +125,7 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pauseButtonResource();
+                playButtonResource();
                 int position = songListPresenter.mediaPlayerNextPosition();
                 recyclerView.scrollToPosition(position);
                 Handler handler = new Handler();
@@ -154,11 +161,11 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
     }
 
     public void pauseButtonResource(){
-        btnPlay.setBackgroundResource(R.drawable.ic_pause);
+        btnPlay.setBackgroundResource(R.drawable.ic_play);
     }
 
     public void playButtonResource(){
-        btnPlay.setBackgroundResource(R.drawable.ic_play);
+        btnPlay.setBackgroundResource(R.drawable.ic_pause);
     }
 
     @Override
@@ -184,11 +191,5 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            try {
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
     }
 }
