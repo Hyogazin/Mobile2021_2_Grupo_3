@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,7 +35,7 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private LinearLayout listLayoutPlayer;
-    private TextView txtsname;
+    public static TextView txtsname;
     private Button btnPrev;
     public static Button btnPlay;
     private Button btnNext;
@@ -64,6 +65,13 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
 
         if (songListPresenter.mediaPlayer == null){
             listLayoutPlayer.setVisibility(View.INVISIBLE);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,0,10);
+            recyclerView.setLayoutParams(param);
+        } else{
+            listLayoutPlayer.setVisibility(View.VISIBLE);
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,0,8);
+            recyclerView.setLayoutParams(param);
+            updateLayout(songListPresenter.selectedName);
         }
 
         songListPresenter.getAllSongsFromSQLite();
@@ -72,6 +80,8 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
             @Override
             public void onClick(View view) {
                 listLayoutPlayer.setVisibility(View.VISIBLE);
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,0,8);
+                recyclerView.setLayoutParams(param);
                 recyclerView.scrollToPosition(songListPresenter.selectedPosition);
                 songListPresenter.onPlayerClick();
             }
@@ -88,7 +98,7 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
                     public void run() {
                         recyclerView.findViewHolderForAdapterPosition(position).itemView.performClick();
                     }
-                }, 10);
+                }, 100);
             }
         });
 
@@ -116,7 +126,7 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
                     public void run() {
                         recyclerView.findViewHolderForAdapterPosition(position).itemView.performClick();
                     }
-                }, 10);
+                }, 100);
 
             }
         });
@@ -130,14 +140,16 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
             @Override
             public void onItemClick(int position) {
                 listLayoutPlayer.setVisibility(View.VISIBLE);
-                recyclerView.scrollToPosition(position);
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,0,8);
+                recyclerView.setLayoutParams(param);
                 songListPresenter.onItemClick(position);
+                recyclerView.scrollToPosition(songListPresenter.selectedPosition);
             }
         });
     }
 
-    public void updateLayout(Song song){
-        txtsname.setText(song.getTitle());
+    public void updateLayout(String name){
+        txtsname.setText(name);
         txtsname.setSelected(true);
     }
 
@@ -174,7 +186,6 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
         super.onDestroy();
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             try {
-                PlayerActivity.notificationManager.cancelAll();
             }catch (Exception e){
                 e.printStackTrace();
             }

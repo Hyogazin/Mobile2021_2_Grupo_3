@@ -32,22 +32,6 @@ public class SongPlayerPresenter {
         this.songPlayerActivity = songPlayerActivity;
     }
 
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getExtras().getString("action_name");
-
-            switch (action){
-                case CreateNotification.ACTION_PREVIOUS:
-                    break;
-                case CreateNotification.ACTION_PLAY:
-                    break;
-                case CreateNotification.ACTION_NEXT:
-                    break;
-            }
-        }
-    };
-
     public void updateLayout(boolean onCreate){
         if(!onCreate){
             if(SongListPresenter.mediaPlayer != null){
@@ -80,7 +64,11 @@ public class SongPlayerPresenter {
         updateLayout(false);
         songPlayerActivity.pauseButtonResource();
         songPlayerActivity.previousAnimation();
+        SongListActivity.btnPlay.setBackgroundResource(R.drawable.ic_pause);
         SongListActivity.recyclerView.getAdapter().notifyDataSetChanged();
+        SongListActivity.recyclerView.scrollToPosition(SongListPresenter.selectedPosition);
+        SongListActivity.txtsname.setText(SongListPresenter.selectedName);
+        //COLOCAR PRA MUDAR O PLAYER DA LISTA AQUI
     }
 
     public void playMusic(){
@@ -107,7 +95,10 @@ public class SongPlayerPresenter {
         updateLayout(false);
         songPlayerActivity.pauseButtonResource();
         songPlayerActivity.nextAnimation();
+        SongListActivity.btnPlay.setBackgroundResource(R.drawable.ic_pause);
         SongListActivity.recyclerView.getAdapter().notifyDataSetChanged();
+        SongListActivity.recyclerView.scrollToPosition(SongListPresenter.selectedPosition);
+        SongListActivity.txtsname.setText(SongListPresenter.selectedName);
     }
 
     public String createTime(int duration){

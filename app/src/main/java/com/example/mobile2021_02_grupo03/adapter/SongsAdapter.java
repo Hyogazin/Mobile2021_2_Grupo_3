@@ -45,10 +45,10 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         if(songListPresenter.selectedLayout != 0){
-            setAnimation(holder.itemView, position);
+            setAnimation(holder.itemView, holder.getAdapterPosition());
         }
 
-        Song song = songs.get(position);
+        Song song = songs.get(holder.getAdapterPosition());
         TextView songName = holder.itemView.findViewById(R.id.txtSongName);
 
         songName.setText(song.getTitle());
@@ -66,7 +66,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder>{
             holder.itemView.findViewById(R.id.txtSongName).setSelected(false);
         } else{
             if(songListPresenter.selectedName.equals(songs.get(position).getTitle())){
-                songListPresenter.selectedPosition = position;
+                songListPresenter.selectedPosition = holder.getAdapterPosition();
                 holder.itemView.findViewById(R.id.background).setBackgroundResource(R.drawable.list_bg_pressed);
                 holder.itemView.findViewById(R.id.txtSongName).setSelected(true);
             } else{

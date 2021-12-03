@@ -19,12 +19,15 @@ import java.util.ArrayList;
 public class SongListPresenter {
 
     public static MediaPlayer mediaPlayer;
+    public static ArrayList<Song> selectedList;
     public static ArrayList<Song> songs = new ArrayList<>();
+    public ArrayList<Song> recentSongs = new ArrayList<>();
     public static int selectedLayout;
     public static int selectedPosition;
     public static String selectedName = "";
     private SongListActivity songListActivity;
-    private SongsAdapter adapter = new SongsAdapter(songs, this);
+    private SongsAdapter allSongsAdapter = new SongsAdapter(songs, this);
+    private SongsAdapter recentSongsAdapter = new SongsAdapter(recentSongs, this);
 
     public SongListPresenter(SongListActivity songListActivity) {
         this.songListActivity = songListActivity;
@@ -55,7 +58,9 @@ public class SongListPresenter {
                 cursor.moveToNext();
             }
             selectedLayout = 1;
-            songListActivity.displaySongs(adapter);
+            selectedList = songs;
+            songListActivity.getSupportActionBar().setTitle("Todas as Músicas");
+            songListActivity.displaySongs(allSongsAdapter);
         }
     }
 
@@ -64,7 +69,7 @@ public class SongListPresenter {
             MusicAppDBHelper dbHelper = new MusicAppDBHelper(songListActivity.getApplicationContext());
             SQLiteDatabase dbread = dbHelper.getReadableDatabase();
 
-            songs.clear();
+            recentSongs.clear();
 
             String[] colunas = {
                     BaseColumns._ID,
@@ -79,26 +84,36 @@ public class SongListPresenter {
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.recentSongsTable.COLUMN_NAME_NAME));
                 String path = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH));
                 Song song = new Song(id, name, path);
-                songs.add(song);
+                recentSongs.add(song);
                 cursor.moveToPrevious();
             }
             selectedLayout = 2;
-            songListActivity.displaySongs(adapter);
+            selectedList = recentSongs;
+            songListActivity.getSupportActionBar().setTitle("Músicas Recentes");
+            songListActivity.displaySongs(recentSongsAdapter);
         }
     }
 
     public void onItemClick(int position){
-        if(selectedName.equals(songs.get(position).getTitle())){
+        if(selectedName.equals(selectedList.get(position).getTitle())){
             songListActivity.startActivity(new Intent(songListActivity, SongPlayerActivity.class));
         } else{
             mediaPlayerCreate(position);
             songListActivity.pauseButtonResource();
-            selectedName = songs.get(position).getTitle();
+            selectedName = selectedList.get(position).getTitle();
         }
-        insertRecentSong(selectedName, songs.get(position).getPath());
-        songListActivity.updateLayout(songs.get(position));
+        insertRecentSong(selectedName, selectedList.get(position).getPath());
+        songListActivity.updateLayout(selectedName);
         if(selectedLayout == 2){
+            for(int i = 0; i < songs.size(); i++){
+                if(songs.get(i).getTitle().equals(recentSongs.get(position).getTitle())){
+                    selectedPosition = i;
+                    break;
+                }
+            }
             getAllSongsFromSQLite();
+        } else{
+            selectedPosition = position;
         }
     }
 
@@ -117,7 +132,7 @@ public class SongListPresenter {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
-        Uri uri = Uri.parse(songs.get(position).getPath());
+        Uri uri = Uri.parse(selectedList.get(position).getPath());
         mediaPlayer = MediaPlayer.create(songListActivity.getApplicationContext(), uri);
         mediaPlayer.start();
     }
