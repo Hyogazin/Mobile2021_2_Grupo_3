@@ -116,7 +116,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
     public void takePermissions(View view){
         if(isPermissionGranted()){
             Toast.makeText(this, "Permission Already Granted", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), MusicListActivity.class);
+            Intent intent = new Intent(getApplicationContext(), SongListActivity.class);
             startActivity(intent);
         } else{
             takePermission();

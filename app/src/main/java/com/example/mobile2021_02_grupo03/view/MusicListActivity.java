@@ -266,9 +266,7 @@ public class MusicListActivity extends AppCompatActivity implements NavigationVi
                 break;
             }
         }
-
         drawerLayout.closeDrawer(GravityCompat.START);
-
         return true;
     }
 
@@ -281,9 +279,6 @@ public class MusicListActivity extends AppCompatActivity implements NavigationVi
             }catch (Exception e){
                 e.printStackTrace();
             }
-
-
-
         }
     }
 }
