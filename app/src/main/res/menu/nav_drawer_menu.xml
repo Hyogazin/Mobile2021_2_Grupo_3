@@ -6,6 +6,4 @@
         android:title="Músicas recentes" />
     <item android:id="@+id/nav_item_four"
         android:title="Sair" />
-    <item android:id="@+id/nav_item_five"
-        android:title="Item 5" />
 </menu>

@@ -6,8 +6,6 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
-import com.example.mobile2021_02_grupo03.view.PlayerActivity;
-
 public class OnClearFromRecentService extends Service {
     @Nullable
     @Override

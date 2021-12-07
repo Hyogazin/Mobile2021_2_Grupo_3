@@ -1,23 +1,9 @@
 package com.example.mobile2021_02_grupo03.presenter;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.View;
-
 import com.example.mobile2021_02_grupo03.R;
 import com.example.mobile2021_02_grupo03.model.Song;
-import com.example.mobile2021_02_grupo03.view.CreateNotification;
-import com.example.mobile2021_02_grupo03.view.MusicListActivity;
 import com.example.mobile2021_02_grupo03.view.SongListActivity;
 import com.example.mobile2021_02_grupo03.view.SongPlayerActivity;
 
@@ -26,7 +12,6 @@ import java.util.ArrayList;
 public class SongPlayerPresenter {
 
     private SongPlayerActivity songPlayerActivity;
-    private NotificationManager notificationManager;
 
     public SongPlayerPresenter(SongPlayerActivity songPlayerActivity) {
         this.songPlayerActivity = songPlayerActivity;

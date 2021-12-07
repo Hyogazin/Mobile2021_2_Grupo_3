@@ -1,44 +1,22 @@
 package com.example.mobile2021_02_grupo03.view;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.BaseColumns;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.mobile2021_02_grupo03.R;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBContract;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBHelper;
-
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class MusicPlayerActivity extends AppCompatActivity {
 
@@ -66,25 +44,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
                     String path = mySongs.get(i).toString();
                     dbHelper.insert(dbwrite, MusicAppDBContract.songsTable.TABLE_NAME, name, path);
                 }
-
-                /*String url = "https://www.dropbox.com/s/9fop0kpaznprd77/Novo%20Tom%20%26%20Leonardo%20Gon%C3%A7alves%20-%20Brilhar%20por%20Ti.mp3?dl=0#"; // your URL here
-                MediaPlayer mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioAttributes(
-                        new AudioAttributes
-                                .Builder()
-                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                .build());
-                try {
-                    mediaPlayer.setDataSource(url);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    mediaPlayer.prepare(); // might take long! (for buffering, etc)
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                mediaPlayer.start();*/
             }
         });
 
@@ -115,7 +74,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
 
     public void takePermissions(View view){
         if(isPermissionGranted()){
-            Toast.makeText(this, "Permission Already Granted", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), SongListActivity.class);
             startActivity(intent);
         } else{

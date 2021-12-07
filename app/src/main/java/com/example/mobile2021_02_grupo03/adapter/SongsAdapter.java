@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mobile2021_02_grupo03.R;
 import com.example.mobile2021_02_grupo03.model.Song;
 import com.example.mobile2021_02_grupo03.presenter.SongListPresenter;
-import com.example.mobile2021_02_grupo03.view.MusicListActivity;
-import com.example.mobile2021_02_grupo03.view.SongListActivity;
 
 import java.util.ArrayList;
 

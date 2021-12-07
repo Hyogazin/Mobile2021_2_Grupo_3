@@ -1,17 +1,13 @@
 package com.example.mobile2021_02_grupo03.view;
 
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,10 +16,8 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.mobile2021_02_grupo03.R;
 import com.example.mobile2021_02_grupo03.adapter.SongsAdapter;
-import com.example.mobile2021_02_grupo03.model.Song;
 import com.example.mobile2021_02_grupo03.presenter.SongListPresenter;
 import com.google.android.material.navigation.NavigationView;
 
