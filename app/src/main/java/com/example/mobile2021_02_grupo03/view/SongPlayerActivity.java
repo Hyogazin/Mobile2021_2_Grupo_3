@@ -8,20 +8,20 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import com.example.mobile2021_02_grupo03.R;
-import com.example.mobile2021_02_grupo03.databinding.ActivitySongPlayerDatabindingBinding;
-import com.example.mobile2021_02_grupo03.presenter.SongPlayerPresenterDataBinding;
+import com.example.mobile2021_02_grupo03.databinding.ActivitySongPlayerBinding;
+import com.example.mobile2021_02_grupo03.presenter.SongPlayerPresenter;
 
-public class SongPlayerActivityDataBinding extends AppCompatActivity {
+public class SongPlayerActivity extends AppCompatActivity {
 
-    private SongPlayerPresenterDataBinding presenter;
-    public ActivitySongPlayerDatabindingBinding layout;
+    private SongPlayerPresenter presenter;
+    public ActivitySongPlayerBinding layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        layout = DataBindingUtil.setContentView(this, R.layout.activity_song_player_databinding);
+        layout = DataBindingUtil.setContentView(this, R.layout.activity_song_player);
 
-        presenter = new SongPlayerPresenterDataBinding(this);
+        presenter = new SongPlayerPresenter(this);
 
         layout.playerSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

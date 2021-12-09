@@ -4,8 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -16,7 +14,6 @@ import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBContract;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBHelper;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity {
@@ -46,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
 
-                Intent intent = new Intent(getApplicationContext(), SongListActivityDataBinding.class);
+                Intent intent = new Intent(getApplicationContext(), SongListActivity.class);
                 startActivity(intent);
             }
         });

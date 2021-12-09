@@ -1,7 +1,6 @@
 package com.example.mobile2021_02_grupo03.view;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,23 +9,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.GravityCompat;
 import com.example.mobile2021_02_grupo03.R;
-import com.example.mobile2021_02_grupo03.databinding.ActivitySongListDatabindingBinding;
-import com.example.mobile2021_02_grupo03.presenter.SongListPresenterDataBinding;
+import com.example.mobile2021_02_grupo03.databinding.ActivitySongListBinding;
+import com.example.mobile2021_02_grupo03.presenter.SongListPresenter;
 import com.google.android.material.navigation.NavigationView;
 
-public class SongListActivityDataBinding extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class SongListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    public ActivitySongListDatabindingBinding layout;
-    public SongListPresenterDataBinding presenter;
+    public ActivitySongListBinding layout;
+    public SongListPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        layout = ActivitySongListDatabindingBinding.inflate(getLayoutInflater());
+        layout = ActivitySongListBinding.inflate(getLayoutInflater());
         setContentView(layout.getRoot());
 
-        presenter = new SongListPresenterDataBinding(this);
+        presenter = new SongListPresenter(this);
 
         layout.listLayoutBtnPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +76,7 @@ public class SongListActivityDataBinding extends AppCompatActivity implements Na
 
             @Override
             public boolean onQueryTextChange(String s) {
+                presenter.closeMiniPlayer();
                 presenter.songsAdapter.getFilter().filter(s);
                 return false;
             }
@@ -89,10 +89,12 @@ public class SongListActivityDataBinding extends AppCompatActivity implements Na
         switch (item.getItemId()) {
             case R.id.nav_item_all_musics: {
                 presenter.getAllSongsFromSQLite();
+                presenter.openMiniPlayer();
                 break;
             }
             case R.id.nav_item_recent_musics: {
                 presenter.getRecentSongsFromSQLite();
+                presenter.closeMiniPlayer();
                 break;
             }
             default: {

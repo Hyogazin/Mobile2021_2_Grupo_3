@@ -7,26 +7,23 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Filter;
 import android.widget.Filterable;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.mobile2021_02_grupo03.R;
-import com.example.mobile2021_02_grupo03.databinding.RowAllSongsDatabindingBinding;
-import com.example.mobile2021_02_grupo03.databinding.RowRecentSongsDatabindingBinding;
+import com.example.mobile2021_02_grupo03.databinding.RowAllSongsBinding;
+import com.example.mobile2021_02_grupo03.databinding.RowRecentSongsBinding;
 import com.example.mobile2021_02_grupo03.model.Song;
-import com.example.mobile2021_02_grupo03.presenter.SongListPresenterDataBinding;
-
+import com.example.mobile2021_02_grupo03.presenter.SongListPresenter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
 
 public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDataBinding.ViewHolder> implements Filterable {
 
-    private SongListPresenterDataBinding songListPresenterDataBinding;
+    private SongListPresenter songListPresenter;
     private ArrayList<Song> songs;
 
-    public SongsAdapterDataBinding(SongListPresenterDataBinding songListPresenterDataBinding, ArrayList<Song> songs){
-        this.songListPresenterDataBinding = songListPresenterDataBinding;
+    public SongsAdapterDataBinding(SongListPresenter songListPresenter, ArrayList<Song> songs){
+        this.songListPresenter = songListPresenter;
         this.songs = new ArrayList<>(songs);
     }
 
@@ -35,11 +32,11 @@ public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDa
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
 
-        if(songListPresenterDataBinding.selectedList == songListPresenterDataBinding.songs){
-            RowAllSongsDatabindingBinding layoutAllSongs = RowAllSongsDatabindingBinding.inflate(layoutInflater, parent, false);
+        if(songListPresenter.selectedList == songListPresenter.songs){
+            RowAllSongsBinding layoutAllSongs = RowAllSongsBinding.inflate(layoutInflater, parent, false);
             return new ViewHolder(layoutAllSongs);
         } else{
-            RowRecentSongsDatabindingBinding layoutRecentSongs = RowRecentSongsDatabindingBinding.inflate(layoutInflater, parent, false);
+            RowRecentSongsBinding layoutRecentSongs = RowRecentSongsBinding.inflate(layoutInflater, parent, false);
             return new ViewHolder(layoutRecentSongs);
         }
     }
@@ -47,15 +44,15 @@ public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDa
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if(songListPresenterDataBinding.selectedLayout != 0){
+        if(songListPresenter.selectedLayout != 0){
             setAnimation(holder.itemView);
         }
-        Song song = songListPresenterDataBinding.selectedList.get(holder.getAdapterPosition());
-        if(songListPresenterDataBinding.selectedList == songListPresenterDataBinding.songs){
+        Song song = songListPresenter.selectedList.get(holder.getAdapterPosition());
+        if(songListPresenter.selectedList == songListPresenter.songs){
             holder.layoutAllSongs.setSong(song);
             holder.layoutAllSongs.executePendingBindings();
 
-            if(holder.layoutAllSongs.getSong().getTitle().equals(songListPresenterDataBinding.selectedName)){
+            if(holder.layoutAllSongs.getSong().getTitle().equals(songListPresenter.selectedName)){
                 holder.layoutAllSongs.rowBackground.setBackgroundResource(R.drawable.list_bg_pressed);
                 holder.layoutAllSongs.rowSongName.setSelected(true);
             } else{
@@ -69,9 +66,9 @@ public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDa
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                songListPresenterDataBinding.onItemClick(holder.getAdapterPosition());
-                songListPresenterDataBinding.songs.clear();
-                songListPresenterDataBinding.songs.addAll(songs);
+                songListPresenter.onItemClick(holder.getAdapterPosition());
+                songListPresenter.songs.clear();
+                songListPresenter.songs.addAll(songs);
                 notifyDataSetChanged();
             }
         });
@@ -79,7 +76,7 @@ public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDa
 
     @Override
     public int getItemCount() {
-        return songListPresenterDataBinding.selectedList.size();
+        return songListPresenter.selectedList.size();
     }
 
     @Override
@@ -108,23 +105,23 @@ public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDa
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            songListPresenterDataBinding.songs.clear();
-            songListPresenterDataBinding.songs.addAll((Collection<? extends Song>) filterResults.values);
+            songListPresenter.songs.clear();
+            songListPresenter.songs.addAll((Collection<? extends Song>) filterResults.values);
             notifyDataSetChanged();
         }
     };
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        RowAllSongsDatabindingBinding layoutAllSongs;
-        RowRecentSongsDatabindingBinding layoutRecentSongs;
+        RowAllSongsBinding layoutAllSongs;
+        RowRecentSongsBinding layoutRecentSongs;
 
-        public ViewHolder(@NonNull RowAllSongsDatabindingBinding layoutAllSongs) {
+        public ViewHolder(@NonNull RowAllSongsBinding layoutAllSongs) {
             super(layoutAllSongs.getRoot());
             this.layoutAllSongs = layoutAllSongs;
         }
 
-        public ViewHolder(@NonNull RowRecentSongsDatabindingBinding layoutRecentSongs) {
+        public ViewHolder(@NonNull RowRecentSongsBinding layoutRecentSongs) {
             super(layoutRecentSongs.getRoot());
             this.layoutRecentSongs = layoutRecentSongs;
         }

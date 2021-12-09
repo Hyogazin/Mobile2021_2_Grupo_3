@@ -18,12 +18,12 @@ import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBContract;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBHelper;
 import com.example.mobile2021_02_grupo03.adapter.SongsAdapterDataBinding;
 import com.example.mobile2021_02_grupo03.model.Song;
-import com.example.mobile2021_02_grupo03.view.SongListActivityDataBinding;
-import com.example.mobile2021_02_grupo03.view.SongPlayerActivityDataBinding;
+import com.example.mobile2021_02_grupo03.view.SongListActivity;
+import com.example.mobile2021_02_grupo03.view.SongPlayerActivity;
 
 import java.util.ArrayList;
 
-public class SongListPresenterDataBinding {
+public class SongListPresenter {
 
     public static MediaPlayer mediaPlayer;
     public static int selectedPosition = -1;
@@ -32,12 +32,12 @@ public class SongListPresenterDataBinding {
     public ArrayList<Song> recentSongs = new ArrayList<>();
     public ArrayList<Song> songs = new ArrayList<>();
     public ArrayList<Song> allSongs = new ArrayList<>();
-    public SongListActivityDataBinding activity;
+    public SongListActivity activity;
     public int selectedLayout = 0;
     public SongsAdapterDataBinding songsAdapter;
 
 
-    public SongListPresenterDataBinding(SongListActivityDataBinding activity) {
+    public SongListPresenter(SongListActivity activity) {
         this.activity = activity;
 
         LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 10);
@@ -58,7 +58,7 @@ public class SongListPresenterDataBinding {
         activity.invalidateOptionsMenu();
 
         if(selectedName.equals(selectedList.get(position).getTitle())){
-            activity.startActivity(new Intent(activity, SongPlayerActivityDataBinding.class).putExtra("songs", allSongs));
+            activity.startActivity(new Intent(activity, SongPlayerActivity.class).putExtra("songs", allSongs));
         } else{
             mediaPlayerCreate(position);
             activity.layout.listLayoutPlayBtn.setBackgroundResource(R.drawable.ic_play);
@@ -94,6 +94,12 @@ public class SongListPresenterDataBinding {
                 activity.layout.listLayoutPlayBtn.setBackgroundResource(R.drawable.ic_pause);
             }
         }
+    }
+
+    public void closeMiniPlayer(){
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 10);
+        activity.layout.recyclerView.setLayoutParams(param);
+        activity.layout.listLayoutPlayer.setVisibility(View.INVISIBLE);
     }
 
     public void mediaPlayerCreate(int position){

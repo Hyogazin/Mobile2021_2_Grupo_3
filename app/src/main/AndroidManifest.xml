@@ -15,10 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mobile2021_02_grupo03">
         <activity
-            android:name=".view.SongPlayerActivityDataBinding"
+            android:name=".view.SongPlayerActivity"
             android:exported="true" />
         <activity
-            android:name=".view.SongListActivityDataBinding"
+            android:name=".view.SongListActivity"
             android:exported="true" />
         <activity
             android:name=".view.LoginActivity"

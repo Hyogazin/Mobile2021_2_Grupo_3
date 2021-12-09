@@ -12,17 +12,17 @@ import com.example.mobile2021_02_grupo03.R;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBContract;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBHelper;
 import com.example.mobile2021_02_grupo03.model.Song;
-import com.example.mobile2021_02_grupo03.view.SongPlayerActivityDataBinding;
+import com.example.mobile2021_02_grupo03.view.SongPlayerActivity;
 
 import java.util.ArrayList;
 
-public class SongPlayerPresenterDataBinding {
+public class SongPlayerPresenter {
 
-    private SongPlayerActivityDataBinding activity;
+    private SongPlayerActivity activity;
     private ArrayList<Song> songs;
     private boolean stopHandler;
 
-    public SongPlayerPresenterDataBinding(SongPlayerActivityDataBinding activity) {
+    public SongPlayerPresenter(SongPlayerActivity activity) {
         this.activity = activity;
 
         stopHandler = false;
@@ -39,12 +39,12 @@ public class SongPlayerPresenterDataBinding {
     }
 
     public void updateLayout(){
-        activity.layout.setSong(songs.get(SongListPresenterDataBinding.selectedPosition));
+        activity.layout.setSong(songs.get(SongListPresenter.selectedPosition));
 
-        activity.layout.playerSeekbar.setMax(SongListPresenterDataBinding.mediaPlayer.getDuration());
-        activity.layout.playerDuration.setText(createTime(SongListPresenterDataBinding.mediaPlayer.getDuration()));
+        activity.layout.playerSeekbar.setMax(SongListPresenter.mediaPlayer.getDuration());
+        activity.layout.playerDuration.setText(createTime(SongListPresenter.mediaPlayer.getDuration()));
 
-        if(SongListPresenterDataBinding.mediaPlayer.isPlaying()){
+        if(SongListPresenter.mediaPlayer.isPlaying()){
             activity.layout.playerPlay.setBackgroundResource(R.drawable.ic_play);
         } else{
             activity.layout.playerPlay.setBackgroundResource(R.drawable.ic_pause);
@@ -55,9 +55,9 @@ public class SongPlayerPresenterDataBinding {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                activity.layout.playerTime.setText(createTime(SongListPresenterDataBinding.mediaPlayer.getCurrentPosition()));
-                activity.layout.playerSeekbar.setProgress(SongListPresenterDataBinding.mediaPlayer.getCurrentPosition());
-                if(SongListPresenterDataBinding.mediaPlayer.getCurrentPosition() >= SongListPresenterDataBinding.mediaPlayer.getDuration()-500){
+                activity.layout.playerTime.setText(createTime(SongListPresenter.mediaPlayer.getCurrentPosition()));
+                activity.layout.playerSeekbar.setProgress(SongListPresenter.mediaPlayer.getCurrentPosition());
+                if(SongListPresenter.mediaPlayer.getCurrentPosition() >= SongListPresenter.mediaPlayer.getDuration()-500){
                     nextPlayer();
                 }
                 if(!stopHandler){
@@ -68,24 +68,24 @@ public class SongPlayerPresenterDataBinding {
     }
 
     public void jumpToTime(){
-        SongListPresenterDataBinding.mediaPlayer.seekTo(activity.layout.playerSeekbar.getProgress());
+        SongListPresenter.mediaPlayer.seekTo(activity.layout.playerSeekbar.getProgress());
     }
 
     public void rewindPlayer(){
-        SongListPresenterDataBinding.mediaPlayer.seekTo(SongListPresenterDataBinding.mediaPlayer.getCurrentPosition()-10000);
+        SongListPresenter.mediaPlayer.seekTo(SongListPresenter.mediaPlayer.getCurrentPosition()-10000);
     }
 
     public void prevPlayer(){
-        int position = SongListPresenterDataBinding.selectedPosition;
+        int position = SongListPresenter.selectedPosition;
         position = ((position-1)<0)?(songs.size()-1):(position-1);
-        SongListPresenterDataBinding.selectedPosition = position;
-        SongListPresenterDataBinding.selectedName = songs.get(position).getTitle();
+        SongListPresenter.selectedPosition = position;
+        SongListPresenter.selectedName = songs.get(position).getTitle();
 
-        SongListPresenterDataBinding.mediaPlayer.stop();
-        SongListPresenterDataBinding.mediaPlayer.release();
+        SongListPresenter.mediaPlayer.stop();
+        SongListPresenter.mediaPlayer.release();
         Uri uri = Uri.parse(songs.get(position).getPath());
-        SongListPresenterDataBinding.mediaPlayer = MediaPlayer.create(activity.getApplicationContext(), uri);
-        SongListPresenterDataBinding.mediaPlayer.start();
+        SongListPresenter.mediaPlayer = MediaPlayer.create(activity.getApplicationContext(), uri);
+        SongListPresenter.mediaPlayer.start();
 
         insertRecentSong(songs.get(position).getTitle(), songs.get(position).getPath());
 
@@ -102,26 +102,26 @@ public class SongPlayerPresenterDataBinding {
     }
 
     public void playPlayer(){
-        if(SongListPresenterDataBinding.mediaPlayer.isPlaying()){
-            SongListPresenterDataBinding.mediaPlayer.pause();
+        if(SongListPresenter.mediaPlayer.isPlaying()){
+            SongListPresenter.mediaPlayer.pause();
             activity.layout.playerPlay.setBackgroundResource(R.drawable.ic_pause);
         } else {
-            SongListPresenterDataBinding.mediaPlayer.start();
+            SongListPresenter.mediaPlayer.start();
             activity.layout.playerPlay.setBackgroundResource(R.drawable.ic_play);
         }
     }
 
     public void nextPlayer(){
-        int position = SongListPresenterDataBinding.selectedPosition;
+        int position = SongListPresenter.selectedPosition;
         position = (position+1)%songs.size();
-        SongListPresenterDataBinding.selectedPosition = position;
-        SongListPresenterDataBinding.selectedName = songs.get(position).getTitle();
+        SongListPresenter.selectedPosition = position;
+        SongListPresenter.selectedName = songs.get(position).getTitle();
 
-        SongListPresenterDataBinding.mediaPlayer.stop();
-        SongListPresenterDataBinding.mediaPlayer.release();
+        SongListPresenter.mediaPlayer.stop();
+        SongListPresenter.mediaPlayer.release();
         Uri uri = Uri.parse(songs.get(position).getPath());
-        SongListPresenterDataBinding.mediaPlayer = MediaPlayer.create(activity.getApplicationContext(), uri);
-        SongListPresenterDataBinding.mediaPlayer.start();
+        SongListPresenter.mediaPlayer = MediaPlayer.create(activity.getApplicationContext(), uri);
+        SongListPresenter.mediaPlayer.start();
 
         insertRecentSong(songs.get(position).getTitle(), songs.get(position).getPath());
 
@@ -137,7 +137,7 @@ public class SongPlayerPresenterDataBinding {
     }
 
     public void forwardPlayer(){
-        SongListPresenterDataBinding.mediaPlayer.seekTo(SongListPresenterDataBinding.mediaPlayer.getCurrentPosition()+10000);
+        SongListPresenter.mediaPlayer.seekTo(SongListPresenter.mediaPlayer.getCurrentPosition()+10000);
     }
 
     public String createTime(int duration){
