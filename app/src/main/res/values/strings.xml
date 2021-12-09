@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mobile2021_02_grupo03</string>
+    <string name="app_name">Try Music</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -11,4 +11,6 @@
     <string name="login_failed">"Login failed"</string>
     <string name="open_drawer">Abrir</string>
     <string name="close_drawer">Fechar</string>
+    <string name="all_songs">Todas as Músicas</string>
+    <string name="recent_songs">Músicas Recentes</string>
 </resources>

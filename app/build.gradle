@@ -5,6 +5,10 @@ plugins {
 android {
     compileSdk 31
 
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "com.example.mobile2021_02_grupo03"
         minSdk 26
