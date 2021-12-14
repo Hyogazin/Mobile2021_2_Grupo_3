@@ -12,7 +12,7 @@ import java.util.Date;
 public class MusicAppDBHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 5;
 
     public static final String DATABASE_NAME = "musicApp.db";
 
@@ -24,7 +24,8 @@ public class MusicAppDBHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_TABLE_RECENT_SONGS = "CREATE TABLE " + MusicAppDBContract.recentSongsTable.TABLE_NAME + " (" +
             MusicAppDBContract.recentSongsTable._ID + " INTEGER PRIMARY KEY," +
             MusicAppDBContract.recentSongsTable.COLUMN_NAME_NAME + " TEXT," +
-            MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH + " TEXT)";
+            MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH + " TEXT," +
+            MusicAppDBContract.recentSongsTable.COLUMN_NAME_PLAYLIST + " TEXT)";
 
     private static final String SQL_DROP_TABLE_SONGS = "DROP TABLE IF EXISTS " + MusicAppDBContract.songsTable.TABLE_NAME;
 
@@ -62,21 +63,22 @@ public class MusicAppDBHelper extends SQLiteOpenHelper {
     }
 
     public void insert(SQLiteDatabase db, String tableName, String name, String path) {
-        if(tableName.equals(MusicAppDBContract.songsTable.TABLE_NAME)){
-            ContentValues values = new ContentValues();
-            values.put(MusicAppDBContract.songsTable.COLUMN_NAME_NAME, name);
-            values.put(MusicAppDBContract.songsTable.COLUMN_NAME_PATH, path);
+        ContentValues values = new ContentValues();
+        values.put(MusicAppDBContract.songsTable.COLUMN_NAME_NAME, name);
+        values.put(MusicAppDBContract.songsTable.COLUMN_NAME_PATH, path);
 
-            db.insert(tableName, null, values);
-        } else if(tableName.equals(MusicAppDBContract.recentSongsTable.TABLE_NAME)){
+        db.insert(tableName, null, values);
+    }
+
+    public void insert(SQLiteDatabase db, String tableName, String name, String path, String playlist) {
             db.execSQL("delete from " + tableName + " where name = '" + name + "'");
 
             ContentValues values = new ContentValues();
             values.put(MusicAppDBContract.recentSongsTable.COLUMN_NAME_NAME, name);
             values.put(MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH, path);
+            values.put(MusicAppDBContract.recentSongsTable.COLUMN_NAME_PLAYLIST, playlist);
 
             db.insert(tableName, null, values);
-        }
     }
 
     public Cursor select(SQLiteDatabase db, String tableName, String[] columns, String where, String[] whereArgs, String orderBy) {

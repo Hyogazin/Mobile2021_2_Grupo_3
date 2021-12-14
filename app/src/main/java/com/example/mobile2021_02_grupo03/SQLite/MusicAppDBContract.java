@@ -19,5 +19,6 @@ public final class MusicAppDBContract {
         public static final String TABLE_NAME = "recentSongs";
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_PATH = "path";
+        public static final String COLUMN_NAME_PLAYLIST = "playlist";
     }
 }

@@ -12,6 +12,7 @@ import com.example.mobile2021_02_grupo03.R;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBContract;
 import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBHelper;
 import com.example.mobile2021_02_grupo03.model.Song;
+import com.example.mobile2021_02_grupo03.model.SongData;
 import com.example.mobile2021_02_grupo03.view.SongPlayerActivity;
 
 import java.util.ArrayList;
@@ -19,16 +20,12 @@ import java.util.ArrayList;
 public class SongPlayerPresenter {
 
     private SongPlayerActivity activity;
-    private ArrayList<Song> songs;
     private boolean stopHandler;
 
     public SongPlayerPresenter(SongPlayerActivity activity) {
         this.activity = activity;
 
         stopHandler = false;
-
-        Bundle bundle = activity.getIntent().getExtras();
-        songs = bundle.getParcelableArrayList("songs");
 
         activity.setSupportActionBar(activity.layout.toolbar);
         activity.getSupportActionBar().setTitle(R.string.app_name);
@@ -39,25 +36,22 @@ public class SongPlayerPresenter {
     }
 
     public void updateLayout(){
-        activity.layout.setSong(songs.get(SongListPresenter.selectedPosition));
-
-        activity.layout.playerSeekbar.setMax(SongListPresenter.mediaPlayer.getDuration());
-        activity.layout.playerDuration.setText(createTime(SongListPresenter.mediaPlayer.getDuration()));
-
-        if(SongListPresenter.mediaPlayer.isPlaying()){
+        activity.layout.setSong(SongData.selectedSong);
+        activity.layout.playerSeekbar.setMax(SongData.mediaPlayer.getDuration());
+        activity.layout.playerDuration.setText(createTime(SongData.mediaPlayer.getDuration()));
+        if(SongData.mediaPlayer.isPlaying()){
             activity.layout.playerPlay.setBackgroundResource(R.drawable.ic_play);
         } else{
             activity.layout.playerPlay.setBackgroundResource(R.drawable.ic_pause);
         }
-
         final Handler handler = new Handler();
         final int delay = 100;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                activity.layout.playerTime.setText(createTime(SongListPresenter.mediaPlayer.getCurrentPosition()));
-                activity.layout.playerSeekbar.setProgress(SongListPresenter.mediaPlayer.getCurrentPosition());
-                if(SongListPresenter.mediaPlayer.getCurrentPosition() >= SongListPresenter.mediaPlayer.getDuration()-500){
+                activity.layout.playerTime.setText(createTime(SongData.mediaPlayer.getCurrentPosition()));
+                activity.layout.playerSeekbar.setProgress(SongData.mediaPlayer.getCurrentPosition());
+                if(SongData.mediaPlayer.getCurrentPosition() >= SongData.mediaPlayer.getDuration()-500){
                     nextPlayer();
                 }
                 if(!stopHandler){
@@ -67,67 +61,55 @@ public class SongPlayerPresenter {
         }, delay);
     }
 
+    public void createMediaPlayer(){
+        SongData.mediaPlayer.stop();
+        SongData.mediaPlayer.release();
+        Uri uri = Uri.parse(SongData.selectedSongs.get(SongData.selectedPosition).getPath());
+        SongData.mediaPlayer = MediaPlayer.create(activity, uri);
+        SongData.mediaPlayer.start();
+    }
+
     public void jumpToTime(){
-        SongListPresenter.mediaPlayer.seekTo(activity.layout.playerSeekbar.getProgress());
+        SongData.mediaPlayer.seekTo(activity.layout.playerSeekbar.getProgress());
     }
 
     public void rewindPlayer(){
-        SongListPresenter.mediaPlayer.seekTo(SongListPresenter.mediaPlayer.getCurrentPosition()-10000);
+        SongData.mediaPlayer.seekTo(SongData.mediaPlayer.getCurrentPosition()-10000);
     }
 
     public void prevPlayer(){
-        int position = SongListPresenter.selectedPosition;
-        position = ((position-1)<0)?(songs.size()-1):(position-1);
-        SongListPresenter.selectedPosition = position;
-        SongListPresenter.selectedName = songs.get(position).getTitle();
-
-        SongListPresenter.mediaPlayer.stop();
-        SongListPresenter.mediaPlayer.release();
-        Uri uri = Uri.parse(songs.get(position).getPath());
-        SongListPresenter.mediaPlayer = MediaPlayer.create(activity.getApplicationContext(), uri);
-        SongListPresenter.mediaPlayer.start();
-
-        insertRecentSong(songs.get(position).getTitle(), songs.get(position).getPath());
-
-        updateLayout();
+        SongData.selectedPosition = ((SongData.selectedPosition-1)<0)?(SongData.selectedSongs.size()-1):(SongData.selectedPosition-1);
+        SongData.selectedSong = SongData.selectedSongs.get(SongData.selectedPosition);
+        insertRecentSong(SongData.selectedSong.getTitle(), SongData.selectedSong.getPath(), SongData.selectedSong.getLayout());
+        createMediaPlayer();
         previousAnimation();
-    }
-
-    public void previousAnimation(){
-        ObjectAnimator animator = ObjectAnimator.ofFloat(activity.layout.playerImg, "rotation", 360f, 0f);
-        animator.setDuration(1000);
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(animator);
-        animatorSet.start();
+        updateLayout();
     }
 
     public void playPlayer(){
-        if(SongListPresenter.mediaPlayer.isPlaying()){
-            SongListPresenter.mediaPlayer.pause();
+        if(SongData.mediaPlayer.isPlaying()){
+            SongData.mediaPlayer.pause();
             activity.layout.playerPlay.setBackgroundResource(R.drawable.ic_pause);
         } else {
-            SongListPresenter.mediaPlayer.start();
+            SongData.mediaPlayer.start();
             activity.layout.playerPlay.setBackgroundResource(R.drawable.ic_play);
         }
     }
 
     public void nextPlayer(){
-        int position = SongListPresenter.selectedPosition;
-        position = (position+1)%songs.size();
-        SongListPresenter.selectedPosition = position;
-        SongListPresenter.selectedName = songs.get(position).getTitle();
-
-        SongListPresenter.mediaPlayer.stop();
-        SongListPresenter.mediaPlayer.release();
-        Uri uri = Uri.parse(songs.get(position).getPath());
-        SongListPresenter.mediaPlayer = MediaPlayer.create(activity.getApplicationContext(), uri);
-        SongListPresenter.mediaPlayer.start();
-
-        insertRecentSong(songs.get(position).getTitle(), songs.get(position).getPath());
-
-        updateLayout();
+        SongData.selectedPosition = (SongData.selectedPosition+1)%SongData.selectedSongs.size();
+        SongData.selectedSong = SongData.selectedSongs.get(SongData.selectedPosition);
+        insertRecentSong(SongData.selectedSong.getTitle(), SongData.selectedSong.getPath(), SongData.selectedSong.getLayout());
+        createMediaPlayer();
         nextAnimation();
+        updateLayout();
     }
+
+
+    public void forwardPlayer(){
+        SongData.mediaPlayer.seekTo(SongData.mediaPlayer.getCurrentPosition()+10000);
+    }
+
     public void nextAnimation(){
         ObjectAnimator animator = ObjectAnimator.ofFloat(activity.layout.playerImg, "rotation", 0f, 360f);
         animator.setDuration(1000);
@@ -136,8 +118,12 @@ public class SongPlayerPresenter {
         animatorSet.start();
     }
 
-    public void forwardPlayer(){
-        SongListPresenter.mediaPlayer.seekTo(SongListPresenter.mediaPlayer.getCurrentPosition()+10000);
+    public void previousAnimation(){
+        ObjectAnimator animator = ObjectAnimator.ofFloat(activity.layout.playerImg, "rotation", 360f, 0f);
+        animator.setDuration(1000);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(animator);
+        animatorSet.start();
     }
 
     public String createTime(int duration){
@@ -154,14 +140,13 @@ public class SongPlayerPresenter {
         return time;
     }
 
-    public void insertRecentSong(String name, String path){
-        MusicAppDBHelper dbHelper = new MusicAppDBHelper(activity);
+    public void insertRecentSong(String name, String path, String playlist){
+        MusicAppDBHelper dbHelper = new MusicAppDBHelper(activity.getApplicationContext());
         SQLiteDatabase dbwrite = dbHelper.getWritableDatabase();
-        dbHelper.insert(dbwrite, MusicAppDBContract.recentSongsTable.TABLE_NAME, name, path);
+        dbHelper.insert(dbwrite, MusicAppDBContract.recentSongsTable.TABLE_NAME, name, path, playlist);
     }
 
     public void stopHandler(){
         stopHandler = true;
     }
-
 }

@@ -15,6 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mobile2021_02_grupo03">
         <activity
+            android:name=".view.CreateAccountActivity"
+            android:exported="true"
+            android:label="@string/title_activity_create_account"
+            android:theme="@style/Theme.Mobile2021_02_grupo03.NoActionBar" />
+        <activity
             android:name=".view.SongPlayerActivity"
             android:exported="true" />
         <activity
@@ -32,11 +37,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <receiver android:name=".services.NotificationActionService" />
-
-        <service android:name=".services.OnClearFromRecentService" />
-        <service android:name=".services.MediaPlayerService" />
     </application>
 
 </manifest>

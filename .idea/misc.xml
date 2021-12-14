@@ -3,19 +3,41 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/drawable-v24/list_bg.xml" value="0.2722222222222222" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/drawable-v24/list_bg_pressed.xml" value="0.2722222222222222" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/drawable/ic_person.xml" value="0.25846153846153846" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/drawable/ic_play.xml" value="0.18611111111111112" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/drawable/list_bg.xml" value="0.22552083333333334" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/drawable/list_bg_pressed.xml" value="0.2722222222222222" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/drawable/list_bg_recent_musics.xml" value="0.25846153846153846" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/drawable/list_bg_selector.xml" value="0.2625" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.1" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout-w936dp/activity_login.xml" value="0.1" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/activity_create_account.xml" value="0.23055555555555557" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/activity_login.xml" value="0.18" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/activity_main1.xml" value="0.23055555555555557" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/activity_music_list.xml" value="0.14" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/activity_music_player.xml" value="0.22" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/activity_player.xml" value="0.2" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/activity_song_list.xml" value="0.19537037037037036" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/activity_song_player.xml" value="0.2388888888888889" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/content_create_account.xml" value="0.23055555555555557" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/create_account_activity.xml" value="0.22962962962962963" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/ic_baseline_lock_24.xml" value="0.23055555555555557" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/ic_baseline_person_outline_24.xml" value="0.23055555555555557" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/ic_launcher_background.xml" value="0.23055555555555557" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/list_item.xml" value="0.18" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/nav_header.xml" value="0.23333333333333334" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/rounb_bg_create.xml" value="0.23055555555555557" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/round_bg_login.xml" value="0.23055555555555557" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/row_all_songs.xml" value="0.17962962962962964" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/row_all_songs_databinding.xml" value="0.14907407407407408" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/row_recent_songs.xml" value="0.17962962962962964" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/row_recent_songs_databinding.xml" value="0.14907407407407408" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/sign_up_tab.xml" value="0.23055555555555557" />
         <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/layout/splashscreen.xml" value="0.1" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/menu/nav_drawer_menu.xml" value="0.1953125" />
+        <entry key="..\:/Users/Rafael/AndroidStudioProjects/Mobile2021_02_grupo03/app/src/main/res/menu/search_menu.xml" value="0.2037037037037037" />
       </map>
     </option>
   </component>

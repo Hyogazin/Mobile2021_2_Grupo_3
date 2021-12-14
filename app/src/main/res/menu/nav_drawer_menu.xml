@@ -4,6 +4,8 @@
         android:title="Todas as músicas" />
     <item android:id="@+id/nav_item_recent_musics"
         android:title="Músicas recentes" />
+    <item android:id="@+id/nav_item_streaming_musics"
+        android:title="Músicas via Streaming" />
     <item android:id="@+id/nav_item_four"
         android:title="Sair" />
 </menu>

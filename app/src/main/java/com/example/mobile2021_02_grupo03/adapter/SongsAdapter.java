@@ -13,18 +13,17 @@ import com.example.mobile2021_02_grupo03.R;
 import com.example.mobile2021_02_grupo03.databinding.RowAllSongsBinding;
 import com.example.mobile2021_02_grupo03.databinding.RowRecentSongsBinding;
 import com.example.mobile2021_02_grupo03.model.Song;
+import com.example.mobile2021_02_grupo03.model.SongData;
 import com.example.mobile2021_02_grupo03.presenter.SongListPresenter;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDataBinding.ViewHolder> implements Filterable {
+public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> implements Filterable {
 
     private SongListPresenter songListPresenter;
-    private ArrayList<Song> songs;
 
-    public SongsAdapterDataBinding(SongListPresenter songListPresenter, ArrayList<Song> songs){
+    public SongsAdapter(SongListPresenter songListPresenter){
         this.songListPresenter = songListPresenter;
-        this.songs = new ArrayList<>(songs);
     }
 
     @NonNull
@@ -32,7 +31,7 @@ public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDa
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
 
-        if(songListPresenter.selectedList == songListPresenter.songs){
+        if(!SongData.selectedLayout.equals("recent")){
             RowAllSongsBinding layoutAllSongs = RowAllSongsBinding.inflate(layoutInflater, parent, false);
             return new ViewHolder(layoutAllSongs);
         } else{
@@ -44,39 +43,29 @@ public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDa
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if(songListPresenter.selectedLayout != 0){
-            setAnimation(holder.itemView);
-        }
-        Song song = songListPresenter.selectedList.get(holder.getAdapterPosition());
-        if(songListPresenter.selectedList == songListPresenter.songs){
-            holder.layoutAllSongs.setSong(song);
+        if(!SongData.selectedLayout.equals("recent")){
+            holder.layoutAllSongs.setSong(SongData.selectedSongs.get(holder.getAdapterPosition()));
             holder.layoutAllSongs.executePendingBindings();
-
-            if(holder.layoutAllSongs.getSong().getTitle().equals(songListPresenter.selectedName)){
+            if(SongData.selectedSong.getTitle().equals(SongData.selectedSongs.get(position).getTitle())){
                 holder.layoutAllSongs.rowBackground.setBackgroundResource(R.drawable.list_bg_pressed);
-                holder.layoutAllSongs.rowSongName.setSelected(true);
             } else{
                 holder.layoutAllSongs.rowBackground.setBackgroundResource(R.drawable.list_bg);
             }
         } else{
-            holder.layoutRecentSongs.setSong(song);
+            holder.layoutRecentSongs.setSong(SongData.selectedSongs.get(holder.getAdapterPosition()));
             holder.layoutRecentSongs.executePendingBindings();
         }
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 songListPresenter.onItemClick(holder.getAdapterPosition());
-                songListPresenter.songs.clear();
-                songListPresenter.songs.addAll(songs);
-                notifyDataSetChanged();
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return songListPresenter.selectedList.size();
+        return SongData.selectedSongs.size();
     }
 
     @Override
@@ -88,6 +77,18 @@ public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDa
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             ArrayList<Song> filteredList = new ArrayList<>();
+            ArrayList<Song> songs = new ArrayList<>();
+
+            if(SongData.selectedLayout.equals("all")) {
+                songs = SongData.allSongs;
+            } else if(SongData.selectedLayout.equals("streaming")){
+                songs = SongData.streamingSongs;
+            } else if(SongData.selectedLayout.equals("favorite")){
+                songs = SongData.favoriteSongs;
+            }else if(SongData.selectedLayout.equals("recent")){
+                songs = SongData.recentSongs;
+            }
+
             if(charSequence.toString().isEmpty()){
                 filteredList.addAll(songs);
             } else{
@@ -105,8 +106,8 @@ public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDa
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            songListPresenter.songs.clear();
-            songListPresenter.songs.addAll((Collection<? extends Song>) filterResults.values);
+            SongData.selectedSongs.clear();
+            SongData.selectedSongs.addAll((Collection<? extends Song>) filterResults.values);
             notifyDataSetChanged();
         }
     };
@@ -125,11 +126,5 @@ public class SongsAdapterDataBinding extends RecyclerView.Adapter<SongsAdapterDa
             super(layoutRecentSongs.getRoot());
             this.layoutRecentSongs = layoutRecentSongs;
         }
-    }
-
-    private void setAnimation(View viewToAnimate) {
-        Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), android.R.anim.fade_in);
-        animation.setDuration(500);
-        viewToAnimate.startAnimation(animation);
     }
 }

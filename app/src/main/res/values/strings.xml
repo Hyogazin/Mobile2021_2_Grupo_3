@@ -1,16 +1,26 @@
 <resources>
     <string name="app_name">Try Music</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
+    <string name="username">Usuario</string>\
+    <string name="Password">Senha</string>
+    <string name="SignIn">Entrar</string>
+    <string name="Login">LOGIN</string>
+    <string name="Email">E-mail</string>
+    <string name="Confirm_password">Confirme a senha</string>
+    <string name="create_account">Criar uma conta</string>
+    <string name="create_confirm">Criar conta</string>
     <string name="open_drawer">Abrir</string>
     <string name="close_drawer">Fechar</string>
     <string name="all_songs">Todas as Músicas</string>
     <string name="recent_songs">Músicas Recentes</string>
+    <string name="streaming_songs">Músicas via Streaming</string>
+    <string name="favorite_songs">Músicas favoritas</string>
+    <string name="title_activity_create_account">CreateAccountActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>

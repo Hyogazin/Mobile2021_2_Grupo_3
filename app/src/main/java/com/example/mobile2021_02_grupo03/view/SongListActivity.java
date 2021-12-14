@@ -1,6 +1,9 @@
 package com.example.mobile2021_02_grupo03.view;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,6 +13,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.view.GravityCompat;
 import com.example.mobile2021_02_grupo03.R;
 import com.example.mobile2021_02_grupo03.databinding.ActivitySongListBinding;
+import com.example.mobile2021_02_grupo03.model.SongData;
 import com.example.mobile2021_02_grupo03.presenter.SongListPresenter;
 import com.google.android.material.navigation.NavigationView;
 
@@ -30,7 +34,7 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
         layout.listLayoutBtnPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.prevMiniPlayer();
+                presenter.onPrevClick();
             }
         });
 
@@ -44,14 +48,14 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
         layout.listLayoutBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.nextMiniPlayer();
+                presenter.onNextClick();
             }
         });
 
         layout.listLayoutPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.onItemClick(presenter.selectedPosition);
+                presenter.onPlayerClick();
             }
         });
     }
@@ -59,8 +63,7 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.getAllSongsFromSQLite();
-        presenter.openMiniPlayer();
+        presenter.onResumeLayout();
     }
 
     @Override
@@ -73,12 +76,28 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
             public boolean onQueryTextSubmit(String s) {
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String s) {
-                presenter.closeMiniPlayer();
                 presenter.songsAdapter.getFilter().filter(s);
                 return false;
+            }
+        });
+        item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                presenter.closeMiniPlayer();
+                return true;
+            }
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.openMiniPlayer();
+                    }
+                }, 200);
+                return true;
             }
         });
         return super.onCreateOptionsMenu(menu);
@@ -89,16 +108,19 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
         switch (item.getItemId()) {
             case R.id.nav_item_all_musics: {
                 presenter.getAllSongsFromSQLite();
-                presenter.openMiniPlayer();
                 break;
             }
             case R.id.nav_item_recent_musics: {
                 presenter.getRecentSongsFromSQLite();
-                presenter.closeMiniPlayer();
+                break;
+            }
+            case R.id.nav_item_streaming_musics: {
+                presenter.getStreamingSongs();
                 break;
             }
             default: {
-                onBackPressed();
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
                 break;
             }
         }
