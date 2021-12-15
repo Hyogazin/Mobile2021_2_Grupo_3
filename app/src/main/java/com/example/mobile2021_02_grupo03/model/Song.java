@@ -55,6 +55,13 @@ public class Song implements Parcelable {
         }
     };
 
+    public Song(Song song) {
+        this.id = song.id;
+        this.title = song.title;
+        this.path = song.path;
+        this.layout = song.layout;
+    }
+
     public int getId() {
         return id;
     }

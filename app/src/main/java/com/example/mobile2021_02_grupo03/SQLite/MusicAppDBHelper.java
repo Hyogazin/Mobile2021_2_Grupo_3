@@ -28,9 +28,14 @@ public class MusicAppDBHelper extends SQLiteOpenHelper {
             MusicAppDBContract.recentSongsTable.COLUMN_NAME_PLAYLIST + " TEXT)";
 
     private static final String SQL_CREATE_TABLE_FAVORITE_SONGS = "CREATE TABLE IF NOT EXISTS " + MusicAppDBContract.favoriteSongsTable.TABLE_NAME + " (" +
-            MusicAppDBContract.recentSongsTable._ID + " INTEGER PRIMARY KEY," +
-            MusicAppDBContract.recentSongsTable.COLUMN_NAME_NAME + " TEXT," +
-            MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH + " TEXT)";
+            MusicAppDBContract.favoriteSongsTable._ID + " INTEGER PRIMARY KEY," +
+            MusicAppDBContract.favoriteSongsTable.COLUMN_NAME_NAME + " TEXT," +
+            MusicAppDBContract.favoriteSongsTable.COLUMN_NAME_PATH + " TEXT)";
+
+    private static final String SQL_CREATE_TABLE_USERS = "CREATE TABLE IF NOT EXISTS " + MusicAppDBContract.usersTable.TABLE_NAME + " (" +
+            MusicAppDBContract.usersTable._ID + " INTEGER PRIMARY KEY," +
+            MusicAppDBContract.usersTable.COLUMN_NAME_USER + " TEXT," +
+            MusicAppDBContract.usersTable.COLUMN_NAME_PASSWORD + " TEXT)";
 
     private static final String SQL_DROP_TABLE_SONGS = "DROP TABLE IF EXISTS " + MusicAppDBContract.songsTable.TABLE_NAME;
 
@@ -68,6 +73,15 @@ public class MusicAppDBHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_TABLE_SONGS);
         db.execSQL(SQL_CREATE_TABLE_RECENT_SONGS);
         db.execSQL(SQL_CREATE_TABLE_FAVORITE_SONGS);
+        db.execSQL(SQL_CREATE_TABLE_USERS);
+    }
+
+    public void insertUser(SQLiteDatabase db, String tableName, String user, String password) {
+        ContentValues values = new ContentValues();
+        values.put(MusicAppDBContract.usersTable.COLUMN_NAME_USER, user);
+        values.put(MusicAppDBContract.usersTable.COLUMN_NAME_PASSWORD, password);
+
+        db.insert(tableName, null, values);
     }
 
     public void insert(SQLiteDatabase db, String tableName, String name, String path) {
@@ -116,6 +130,11 @@ public class MusicAppDBHelper extends SQLiteOpenHelper {
                 null,                   // don't filter by row groups
                 null               // The sort order
         );
+        return cursor;
+    }
+
+    public Cursor selectUser(SQLiteDatabase db, String username, String password) {
+        Cursor cursor = db.rawQuery("select user, password from users where user = '" + username + "' and password = '" + password + "'", null);
         return cursor;
     }
 

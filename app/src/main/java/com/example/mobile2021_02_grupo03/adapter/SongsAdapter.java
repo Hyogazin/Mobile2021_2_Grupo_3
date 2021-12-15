@@ -67,6 +67,13 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
                 }
 
             }
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    songListPresenter.addFavoriteSong(SongData.selectedSongs.get(holder.getAdapterPosition()));
+                    return true;
+                }
+            });
         } else{
             holder.layoutRecentSongs.setSong(SongData.selectedSongs.get(holder.getAdapterPosition()));
             holder.layoutRecentSongs.executePendingBindings();
@@ -75,13 +82,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
             @Override
             public void onClick(View view) {
                 songListPresenter.onItemClick(holder.getAdapterPosition());
-            }
-        });
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                songListPresenter.addFavoriteSong(SongData.selectedSongs.get(holder.getAdapterPosition()));
-                return true;
             }
         });
     }

@@ -27,4 +27,10 @@ public final class MusicAppDBContract {
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_PATH = "path";
     }
+
+    public static class usersTable implements BaseColumns {
+        public static final String TABLE_NAME = "users";
+        public static final String COLUMN_NAME_USER = "user";
+        public static final String COLUMN_NAME_PASSWORD = "password";
+    }
 }

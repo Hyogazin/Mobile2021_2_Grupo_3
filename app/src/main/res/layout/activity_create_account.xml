@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/imageViewLogo"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="40dp"
             android:src="@drawable/logo" />
@@ -38,29 +38,11 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/create_email"
-            android:layout_width="300dp"
-            android:layout_centerHorizontal="true"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/signup"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/list_bg_selector"
-            android:drawablePadding="15dp"
-            android:hint="@string/Email"
-            android:inputType="textPersonName"
-            android:padding="18dp"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white" />
-
-        <EditText
             android:id="@+id/create_username"
             android:layout_width="300dp"
             android:layout_centerHorizontal="true"
             android:layout_height="wrap_content"
-            android:layout_below="@id/create_email"
+            android:layout_below="@id/signup"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"

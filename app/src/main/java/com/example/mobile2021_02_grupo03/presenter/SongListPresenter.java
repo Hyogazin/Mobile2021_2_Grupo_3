@@ -1,6 +1,5 @@
 package com.example.mobile2021_02_grupo03.presenter;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,11 +12,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -33,12 +29,8 @@ import com.example.mobile2021_02_grupo03.model.SongData;
 import com.example.mobile2021_02_grupo03.view.LoginActivity;
 import com.example.mobile2021_02_grupo03.view.SongListActivity;
 import com.example.mobile2021_02_grupo03.view.SongPlayerActivity;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 public class SongListPresenter implements Response.Listener<JSONObject>, Response.ErrorListener{
 
@@ -273,16 +265,24 @@ public class SongListPresenter implements Response.Listener<JSONObject>, Respons
         MusicAppDBHelper dbHelper = new MusicAppDBHelper(activity.getApplicationContext());
         SQLiteDatabase dbwrite = dbHelper.getWritableDatabase();
 
-        song.setLayout("favorite");
-        if(!SongData.favoriteSongs.contains(song)){
-            SongData.favoriteSongs.add(song);
-            dbHelper.insert(dbwrite, MusicAppDBContract.favoriteSongsTable.TABLE_NAME, song.getTitle(), song.getPath());
-        } else{
-            SongData.favoriteSongs.remove(song);
-            if(SongData.selectedLayout.equals("favorite")){
-                SongData.selectedSongs.remove(song);
+        String songName = song.getTitle();
+        String songPath = song.getPath();
+        String songLayout = "favorite";
+        boolean isFavorite = false;
+        for(int i = 0; i < SongData.favoriteSongs.size(); i++){
+            if(SongData.favoriteSongs.get(i).getTitle().equals(songName)){
+                SongData.favoriteSongs.remove(i);
+                if(SongData.selectedLayout.equals("favorite")){
+                    SongData.selectedSongs.remove(i);
+                }
+                dbHelper.delete(dbwrite, MusicAppDBContract.favoriteSongsTable.TABLE_NAME, song.getTitle());
+                isFavorite = true;
+                break;
             }
-            dbHelper.delete(dbwrite, MusicAppDBContract.favoriteSongsTable.TABLE_NAME, song.getTitle());
+        }
+        if(!isFavorite){
+            SongData.favoriteSongs.add(new Song(songName,songPath,songLayout));
+            dbHelper.insert(dbwrite, MusicAppDBContract.favoriteSongsTable.TABLE_NAME, song.getTitle(), song.getPath());
         }
         songsAdapter.notifyDataSetChanged();
     }
@@ -420,11 +420,14 @@ public class SongListPresenter implements Response.Listener<JSONObject>, Respons
     @Override
     public void onErrorResponse(VolleyError error) {
         Log.d("ERROR: ",error.toString());
-
     }
 
     public void onLogoff(){
+        stopHandler = true;
         SongData.isLogged = false;
+        if(SongData.mediaPlayer != null){
+            SongData.mediaPlayer.pause();
+        }
         Intent intent = new Intent(activity, LoginActivity.class);
         activity.startActivity(intent);
     }
