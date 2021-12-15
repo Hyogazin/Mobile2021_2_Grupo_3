@@ -46,10 +46,26 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         if(!SongData.selectedLayout.equals("recent")){
             holder.layoutAllSongs.setSong(SongData.selectedSongs.get(holder.getAdapterPosition()));
             holder.layoutAllSongs.executePendingBindings();
+            boolean isFavorite = false;
+            for(int i = 0; i < SongData.favoriteSongs.size(); i++){
+                if(SongData.favoriteSongs.get(i).getTitle().equals(SongData.selectedSongs.get(position).getTitle())){
+                    isFavorite = true;
+                    break;
+                }
+            }
             if(SongData.selectedSong.getTitle().equals(SongData.selectedSongs.get(position).getTitle())){
-                holder.layoutAllSongs.rowBackground.setBackgroundResource(R.drawable.list_bg_pressed);
+                if (isFavorite) {
+                    holder.layoutAllSongs.rowBackground.setBackgroundResource(R.drawable.list_bg_favorite_pressed);
+                }else{
+                    holder.layoutAllSongs.rowBackground.setBackgroundResource(R.drawable.list_bg_pressed);
+                }
             } else{
-                holder.layoutAllSongs.rowBackground.setBackgroundResource(R.drawable.list_bg);
+                if (isFavorite) {
+                    holder.layoutAllSongs.rowBackground.setBackgroundResource(R.drawable.list_bg_favorite);
+                }else{
+                    holder.layoutAllSongs.rowBackground.setBackgroundResource(R.drawable.list_bg);
+                }
+
             }
         } else{
             holder.layoutRecentSongs.setSong(SongData.selectedSongs.get(holder.getAdapterPosition()));
@@ -59,6 +75,13 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
             @Override
             public void onClick(View view) {
                 songListPresenter.onItemClick(holder.getAdapterPosition());
+            }
+        });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                songListPresenter.addFavoriteSong(SongData.selectedSongs.get(holder.getAdapterPosition()));
+                return true;
             }
         });
     }

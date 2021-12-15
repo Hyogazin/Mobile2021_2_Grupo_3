@@ -26,7 +26,6 @@ import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity{
 
-    ArrayList<Song> streamingSongs = new ArrayList<>();
     public LoginPresenter presenter;
     public ActivityLoginBinding layout;
 

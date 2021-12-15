@@ -30,6 +30,7 @@ import com.example.mobile2021_02_grupo03.SQLite.MusicAppDBHelper;
 import com.example.mobile2021_02_grupo03.adapter.SongsAdapter;
 import com.example.mobile2021_02_grupo03.model.Song;
 import com.example.mobile2021_02_grupo03.model.SongData;
+import com.example.mobile2021_02_grupo03.view.LoginActivity;
 import com.example.mobile2021_02_grupo03.view.SongListActivity;
 import com.example.mobile2021_02_grupo03.view.SongPlayerActivity;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -43,6 +44,7 @@ public class SongListPresenter implements Response.Listener<JSONObject>, Respons
 
     public SongListActivity activity;
     public SongsAdapter songsAdapter;
+    private boolean stopHandler = false;
 
 
     public SongListPresenter(SongListActivity activity) {
@@ -51,6 +53,7 @@ public class SongListPresenter implements Response.Listener<JSONObject>, Respons
         LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 0, 10);
         activity.layout.recyclerView.setLayoutParams(param);
 
+        getFavoriteSongs();
         getAllSongsFromSQLite();
         songsAdapter = new SongsAdapter(this);
         activity.layout.recyclerView.setAdapter(songsAdapter);
@@ -63,6 +66,24 @@ public class SongListPresenter implements Response.Listener<JSONObject>, Respons
     }
 
     public void onResumeLayout(){
+        if(!SongData.isLogged){
+            onLogoff();
+        }
+
+        stopHandler = false;
+        final Handler handler = new Handler();
+        final int delay = 1000;
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(SongData.mediaPlayer != null && SongData.mediaPlayer.getCurrentPosition() >= SongData.mediaPlayer.getDuration()-500){
+                    onNextClick();
+                }
+                if(!stopHandler){
+                    handler.postDelayed(this, delay);
+                }
+            }
+        }, delay);
         songsAdapter.notifyDataSetChanged();
         openMiniPlayer();
         activity.layout.recyclerView.scrollToPosition(SongData.selectedPosition);
@@ -138,6 +159,7 @@ public class SongListPresenter implements Response.Listener<JSONObject>, Respons
             }
             activity.layout.recyclerView.setAdapter(songsAdapter);
         }
+        stopHandler = true;
         activity.layout.recyclerView.scrollToPosition(SongData.selectedPosition);
         Intent intent = new Intent(activity, SongPlayerActivity.class);
         activity.startActivity(intent);
@@ -149,6 +171,13 @@ public class SongListPresenter implements Response.Listener<JSONObject>, Respons
             activity.layout.recyclerView.setLayoutParams(param);
             activity.layout.listLayoutPlayer.setVisibility(View.VISIBLE);
             activity.layout.setSong(SongData.selectedSong);
+            if(SongData.selectedSong.getLayout().equals("all")){
+                activity.layout.listlayoutPlaylistName.setText(R.string.all_songs);
+            } else if(SongData.selectedSong.getLayout().equals("streaming")){
+                activity.layout.listlayoutPlaylistName.setText(R.string.streaming_songs);
+            } else if(SongData.selectedSong.getLayout().equals("favorite")){
+                activity.layout.listlayoutPlaylistName.setText(R.string.favorite_songs);
+            }
             if(SongData.mediaPlayer.isPlaying()){
                 activity.layout.listLayoutPlayBtn.setBackgroundResource(R.drawable.ic_play);
             } else{
@@ -173,30 +202,32 @@ public class SongListPresenter implements Response.Listener<JSONObject>, Respons
     }
 
     public void onPrevClick(){
-        if(SongData.selectedSong.getLayout().equals("all") && !SongData.selectedLayout.equals("all")){
-            SongData.selectedLayout = "all";
-            SongData.selectedSongs.clear();
-            SongData.selectedSongs.addAll(SongData.allSongs);
-            activity.layout.toolbar.setTitle(R.string.all_songs);
-            activity.layout.recyclerView.setAdapter(songsAdapter);
-        } else if(SongData.selectedSong.getLayout().equals("streaming") && !SongData.selectedLayout.equals("streaming")){
-            SongData.selectedLayout = "streaming";
-            SongData.selectedSongs.clear();
-            SongData.selectedSongs.addAll(SongData.streamingSongs);
-            activity.layout.toolbar.setTitle(R.string.streaming_songs);
-            activity.layout.recyclerView.setAdapter(songsAdapter);
-        } else if(SongData.selectedSong.getLayout().equals("favorite") && !SongData.selectedLayout.equals("favorite")){
-            SongData.selectedLayout = "favorite";
-            SongData.selectedSongs.clear();
-            SongData.selectedSongs.addAll(SongData.favoriteSongs);
-            activity.layout.toolbar.setTitle(R.string.favorite_songs);
-            activity.layout.recyclerView.setAdapter(songsAdapter);
+        if(SongData.selectedSongs.size() > 0 && !(SongData.favoriteSongs.size() == 0 && SongData.selectedSong.getLayout().equals("favorite"))){
+            if(SongData.selectedSong.getLayout().equals("all") && !SongData.selectedLayout.equals("all")){
+                SongData.selectedLayout = "all";
+                SongData.selectedSongs.clear();
+                SongData.selectedSongs.addAll(SongData.allSongs);
+                activity.layout.toolbar.setTitle(R.string.all_songs);
+                activity.layout.recyclerView.setAdapter(songsAdapter);
+            } else if(SongData.selectedSong.getLayout().equals("streaming") && !SongData.selectedLayout.equals("streaming")){
+                SongData.selectedLayout = "streaming";
+                SongData.selectedSongs.clear();
+                SongData.selectedSongs.addAll(SongData.streamingSongs);
+                activity.layout.toolbar.setTitle(R.string.streaming_songs);
+                activity.layout.recyclerView.setAdapter(songsAdapter);
+            } else if(SongData.selectedSong.getLayout().equals("favorite") && !SongData.selectedLayout.equals("favorite")){
+                SongData.selectedLayout = "favorite";
+                SongData.selectedSongs.clear();
+                SongData.selectedSongs.addAll(SongData.favoriteSongs);
+                activity.layout.toolbar.setTitle(R.string.favorite_songs);
+                activity.layout.recyclerView.setAdapter(songsAdapter);
+            }
+            SongData.selectedPosition = ((SongData.selectedPosition-1)<0)?(SongData.selectedSongs.size()-1):(SongData.selectedPosition-1);
+            SongData.selectedSong = SongData.selectedSongs.get(SongData.selectedPosition);
+            createMediaPlayer();
+            songsAdapter.notifyDataSetChanged();
+            activity.layout.recyclerView.scrollToPosition(SongData.selectedPosition);
         }
-        SongData.selectedPosition = ((SongData.selectedPosition-1)<0)?(SongData.selectedSongs.size()-1):(SongData.selectedPosition-1);
-        SongData.selectedSong = SongData.selectedSongs.get(SongData.selectedPosition);
-        createMediaPlayer();
-        songsAdapter.notifyDataSetChanged();
-        activity.layout.recyclerView.scrollToPosition(SongData.selectedPosition);
     }
 
     public void playMiniPlayer(){
@@ -210,36 +241,87 @@ public class SongListPresenter implements Response.Listener<JSONObject>, Respons
     }
 
     public void onNextClick(){
-        if(SongData.selectedSong.getLayout().equals("all") && !SongData.selectedLayout.equals("all")){
-            SongData.selectedLayout = "all";
-            SongData.selectedSongs.clear();
-            SongData.selectedSongs.addAll(SongData.allSongs);
-            activity.layout.toolbar.setTitle(R.string.all_songs);
-            activity.layout.recyclerView.setAdapter(songsAdapter);
-        } else if(SongData.selectedSong.getLayout().equals("streaming") && !SongData.selectedLayout.equals("streaming")){
-            SongData.selectedLayout = "streaming";
-            SongData.selectedSongs.clear();
-            SongData.selectedSongs.addAll(SongData.streamingSongs);
-            activity.layout.toolbar.setTitle(R.string.streaming_songs);
-            activity.layout.recyclerView.setAdapter(songsAdapter);
-        } else if(SongData.selectedSong.getLayout().equals("favorite") && !SongData.selectedLayout.equals("favorite")){
-            SongData.selectedLayout = "favorite";
-            SongData.selectedSongs.clear();
-            SongData.selectedSongs.addAll(SongData.favoriteSongs);
-            activity.layout.toolbar.setTitle(R.string.favorite_songs);
-            activity.layout.recyclerView.setAdapter(songsAdapter);
+        if(SongData.selectedSongs.size() > 0 && !(SongData.favoriteSongs.size() == 0 && SongData.selectedSong.getLayout().equals("favorite"))){
+            if(SongData.selectedSong.getLayout().equals("all") && !SongData.selectedLayout.equals("all")){
+                SongData.selectedLayout = "all";
+                SongData.selectedSongs.clear();
+                SongData.selectedSongs.addAll(SongData.allSongs);
+                activity.layout.toolbar.setTitle(R.string.all_songs);
+                activity.layout.recyclerView.setAdapter(songsAdapter);
+            } else if(SongData.selectedSong.getLayout().equals("streaming") && !SongData.selectedLayout.equals("streaming")){
+                SongData.selectedLayout = "streaming";
+                SongData.selectedSongs.clear();
+                SongData.selectedSongs.addAll(SongData.streamingSongs);
+                activity.layout.toolbar.setTitle(R.string.streaming_songs);
+                activity.layout.recyclerView.setAdapter(songsAdapter);
+            } else if(SongData.selectedSong.getLayout().equals("favorite") && !SongData.selectedLayout.equals("favorite")){
+                SongData.selectedLayout = "favorite";
+                SongData.selectedSongs.clear();
+                SongData.selectedSongs.addAll(SongData.favoriteSongs);
+                activity.layout.toolbar.setTitle(R.string.favorite_songs);
+                activity.layout.recyclerView.setAdapter(songsAdapter);
+            }
+            SongData.selectedPosition = (SongData.selectedPosition+1)%SongData.selectedSongs.size();
+            SongData.selectedSong = SongData.selectedSongs.get(SongData.selectedPosition);
+            createMediaPlayer();
+            songsAdapter.notifyDataSetChanged();
+            activity.layout.recyclerView.scrollToPosition(SongData.selectedPosition);
         }
-        SongData.selectedPosition = (SongData.selectedPosition+1)%SongData.selectedSongs.size();
-        SongData.selectedSong = SongData.selectedSongs.get(SongData.selectedPosition);
-        createMediaPlayer();
+    }
+
+    public void addFavoriteSong(Song song){
+        MusicAppDBHelper dbHelper = new MusicAppDBHelper(activity.getApplicationContext());
+        SQLiteDatabase dbwrite = dbHelper.getWritableDatabase();
+
+        song.setLayout("favorite");
+        if(!SongData.favoriteSongs.contains(song)){
+            SongData.favoriteSongs.add(song);
+            dbHelper.insert(dbwrite, MusicAppDBContract.favoriteSongsTable.TABLE_NAME, song.getTitle(), song.getPath());
+        } else{
+            SongData.favoriteSongs.remove(song);
+            if(SongData.selectedLayout.equals("favorite")){
+                SongData.selectedSongs.remove(song);
+            }
+            dbHelper.delete(dbwrite, MusicAppDBContract.favoriteSongsTable.TABLE_NAME, song.getTitle());
+        }
         songsAdapter.notifyDataSetChanged();
-        activity.layout.recyclerView.scrollToPosition(SongData.selectedPosition);
     }
 
     public void insertRecentSong(String name, String path, String playlist){
         MusicAppDBHelper dbHelper = new MusicAppDBHelper(activity.getApplicationContext());
         SQLiteDatabase dbwrite = dbHelper.getWritableDatabase();
         dbHelper.insert(dbwrite, MusicAppDBContract.recentSongsTable.TABLE_NAME, name, path, playlist);
+    }
+
+    public void getFavoriteSongs(){
+        MusicAppDBHelper dbHelper = new MusicAppDBHelper(activity.getApplicationContext());
+        SQLiteDatabase dbread = dbHelper.getReadableDatabase();
+
+        SongData.favoriteSongs.clear();
+        SongData.selectedSongs.clear();
+
+        String[] colunas = {
+                BaseColumns._ID,
+                MusicAppDBContract.songsTable.COLUMN_NAME_NAME,
+                MusicAppDBContract.songsTable.COLUMN_NAME_PATH
+        };
+
+        Cursor cursor = dbHelper.select(dbread, MusicAppDBContract.favoriteSongsTable.TABLE_NAME, colunas, MusicAppDBContract.songsTable.COLUMN_NAME_NAME);
+
+        cursor.moveToFirst();
+        for(int i = 0; i<cursor.getCount(); i++){
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable._ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable.COLUMN_NAME_NAME));
+            String path = cursor.getString(cursor.getColumnIndexOrThrow(MusicAppDBContract.songsTable.COLUMN_NAME_PATH));
+            String layout = "favorite";
+            Song song = new Song(id, name, path, layout);
+            SongData.favoriteSongs.add(song);
+            cursor.moveToNext();
+        }
+        SongData.selectedLayout = "favorite";
+        SongData.selectedSongs.addAll(SongData.favoriteSongs);
+        activity.layout.toolbar.setTitle(R.string.favorite_songs);
+        activity.layout.recyclerView.setAdapter(songsAdapter);
     }
 
     public void getAllSongsFromSQLite(){
@@ -342,6 +424,8 @@ public class SongListPresenter implements Response.Listener<JSONObject>, Respons
     }
 
     public void onLogoff(){
-
+        SongData.isLogged = false;
+        Intent intent = new Intent(activity, LoginActivity.class);
+        activity.startActivity(intent);
     }
 }

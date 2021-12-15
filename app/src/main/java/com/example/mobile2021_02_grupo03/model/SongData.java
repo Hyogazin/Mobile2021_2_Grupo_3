@@ -19,4 +19,5 @@ public class SongData{
     public static ArrayList<Song> streamingSongs = new ArrayList<>();
     public static ArrayList<Song> recentSongs = new ArrayList<>();
     public static ArrayList<Song> favoriteSongs = new ArrayList<>();
+    public static boolean isLogged = false;
 }

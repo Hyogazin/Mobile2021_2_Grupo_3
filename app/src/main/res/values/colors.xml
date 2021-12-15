@@ -10,5 +10,7 @@
     <color name="colorPrimary">#352029</color>
     <color name="colorSecondary">#4C2C3A</color>
     <color name="backgroundColor">#26161D</color>
+    <color name="favoriteColor">#5C3A48</color>
+    <color name="playlistColor">#B0FFFFFF</color>
     <color name="transparent">#00FFFFFF</color>
 </resources>

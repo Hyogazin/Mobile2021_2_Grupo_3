@@ -27,9 +27,16 @@ public class MusicAppDBHelper extends SQLiteOpenHelper {
             MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH + " TEXT," +
             MusicAppDBContract.recentSongsTable.COLUMN_NAME_PLAYLIST + " TEXT)";
 
+    private static final String SQL_CREATE_TABLE_FAVORITE_SONGS = "CREATE TABLE IF NOT EXISTS " + MusicAppDBContract.favoriteSongsTable.TABLE_NAME + " (" +
+            MusicAppDBContract.recentSongsTable._ID + " INTEGER PRIMARY KEY," +
+            MusicAppDBContract.recentSongsTable.COLUMN_NAME_NAME + " TEXT," +
+            MusicAppDBContract.recentSongsTable.COLUMN_NAME_PATH + " TEXT)";
+
     private static final String SQL_DROP_TABLE_SONGS = "DROP TABLE IF EXISTS " + MusicAppDBContract.songsTable.TABLE_NAME;
 
     private static final String SQL_DROP_TABLE_RECENT_SONGS = "DROP TABLE IF EXISTS " + MusicAppDBContract.recentSongsTable.TABLE_NAME;
+
+    private static final String SQL_DROP_TABLE_FAVORITE_SONGS = "DROP TABLE IF EXISTS " + MusicAppDBContract.favoriteSongsTable.TABLE_NAME;
 
     public MusicAppDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -60,6 +67,7 @@ public class MusicAppDBHelper extends SQLiteOpenHelper {
     public void createTables(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_TABLE_SONGS);
         db.execSQL(SQL_CREATE_TABLE_RECENT_SONGS);
+        db.execSQL(SQL_CREATE_TABLE_FAVORITE_SONGS);
     }
 
     public void insert(SQLiteDatabase db, String tableName, String name, String path) {
@@ -68,6 +76,10 @@ public class MusicAppDBHelper extends SQLiteOpenHelper {
         values.put(MusicAppDBContract.songsTable.COLUMN_NAME_PATH, path);
 
         db.insert(tableName, null, values);
+    }
+
+    public void delete(SQLiteDatabase db, String tableName, String name){
+        db.execSQL("delete from " + tableName + " where name = '" + name + "'");
     }
 
     public void insert(SQLiteDatabase db, String tableName, String name, String path, String playlist) {

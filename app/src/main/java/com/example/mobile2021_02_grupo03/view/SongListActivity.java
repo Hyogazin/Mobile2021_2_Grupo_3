@@ -118,9 +118,12 @@ public class SongListActivity extends AppCompatActivity implements NavigationVie
                 presenter.getStreamingSongs();
                 break;
             }
+            case R.id.nav_item_favorite_musics: {
+                presenter.getFavoriteSongs();
+                break;
+            }
             default: {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
+                presenter.onLogoff();
                 break;
             }
         }

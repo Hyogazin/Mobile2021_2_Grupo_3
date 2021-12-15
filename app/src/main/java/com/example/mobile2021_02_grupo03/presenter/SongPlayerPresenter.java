@@ -37,6 +37,13 @@ public class SongPlayerPresenter {
 
     public void updateLayout(){
         activity.layout.setSong(SongData.selectedSong);
+        if(SongData.selectedSong.getLayout().equals("all")){
+            activity.layout.playerPlaylistName.setText(R.string.all_songs);
+        } else if(SongData.selectedSong.getLayout().equals("streaming")){
+            activity.layout.playerPlaylistName.setText(R.string.streaming_songs);
+        } else if(SongData.selectedSong.getLayout().equals("favorite")){
+            activity.layout.playerPlaylistName.setText(R.string.favorite_songs);
+        }
         activity.layout.playerSeekbar.setMax(SongData.mediaPlayer.getDuration());
         activity.layout.playerDuration.setText(createTime(SongData.mediaPlayer.getDuration()));
         if(SongData.mediaPlayer.isPlaying()){
@@ -78,12 +85,14 @@ public class SongPlayerPresenter {
     }
 
     public void prevPlayer(){
-        SongData.selectedPosition = ((SongData.selectedPosition-1)<0)?(SongData.selectedSongs.size()-1):(SongData.selectedPosition-1);
-        SongData.selectedSong = SongData.selectedSongs.get(SongData.selectedPosition);
-        insertRecentSong(SongData.selectedSong.getTitle(), SongData.selectedSong.getPath(), SongData.selectedSong.getLayout());
-        createMediaPlayer();
-        previousAnimation();
-        updateLayout();
+        if(SongData.selectedSongs.size() > 0 && !(SongData.favoriteSongs.size() == 0 && SongData.selectedSong.getLayout().equals("favorite"))){
+            SongData.selectedPosition = ((SongData.selectedPosition-1)<0)?(SongData.selectedSongs.size()-1):(SongData.selectedPosition-1);
+            SongData.selectedSong = SongData.selectedSongs.get(SongData.selectedPosition);
+            insertRecentSong(SongData.selectedSong.getTitle(), SongData.selectedSong.getPath(), SongData.selectedSong.getLayout());
+            createMediaPlayer();
+            previousAnimation();
+            updateLayout();
+        }
     }
 
     public void playPlayer(){
@@ -97,12 +106,14 @@ public class SongPlayerPresenter {
     }
 
     public void nextPlayer(){
-        SongData.selectedPosition = (SongData.selectedPosition+1)%SongData.selectedSongs.size();
-        SongData.selectedSong = SongData.selectedSongs.get(SongData.selectedPosition);
-        insertRecentSong(SongData.selectedSong.getTitle(), SongData.selectedSong.getPath(), SongData.selectedSong.getLayout());
-        createMediaPlayer();
-        nextAnimation();
-        updateLayout();
+        if(SongData.selectedSongs.size() > 0 && !(SongData.favoriteSongs.size() == 0 && SongData.selectedSong.getLayout().equals("favorite"))){
+            SongData.selectedPosition = (SongData.selectedPosition+1)%SongData.selectedSongs.size();
+            SongData.selectedSong = SongData.selectedSongs.get(SongData.selectedPosition);
+            insertRecentSong(SongData.selectedSong.getTitle(), SongData.selectedSong.getPath(), SongData.selectedSong.getLayout());
+            createMediaPlayer();
+            nextAnimation();
+            updateLayout();
+        }
     }
 
 

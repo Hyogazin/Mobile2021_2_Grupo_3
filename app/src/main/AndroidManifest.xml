@@ -3,7 +3,6 @@
     package="com.example.mobile2021_02_grupo03">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -17,7 +16,6 @@
         <activity
             android:name=".view.CreateAccountActivity"
             android:exported="true"
-            android:label="@string/title_activity_create_account"
             android:theme="@style/Theme.Mobile2021_02_grupo03.NoActionBar" />
         <activity
             android:name=".view.SongPlayerActivity"

@@ -55,7 +55,7 @@
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="8"
+                android:layout_weight="7.5"
                 android:divider="@android:color/transparent"
                 android:dividerHeight="10.0sp"
                 android:padding="8dp"
@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:background="@color/colorPrimary"
-                android:layout_weight="2"
+                android:layout_weight="2.5"
                 android:id="@+id/listLayoutPlayer"
                 android:visibility="invisible">
 
@@ -87,18 +87,35 @@
                         android:layout_marginBottom="5dp"
                         android:ellipsize="marquee"
                         android:marqueeRepeatLimit="marquee_forever"
-                        android:padding="5dp"
+                        android:padding="0dp"
                         android:singleLine="true"
                         android:text="@{Song.title}"
                         android:textAlignment="center"
                         android:textColor="#FFF"
                         android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/listlayoutPlaylistName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_alignTop="@id/listLayoutSongName"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:padding="0dp"
+                        android:singleLine="true"
+                        android:textAlignment="center"
+                        android:textColor="@color/playlistColor"
+                        android:textSize="14sp" />
 
                     <Button
                         android:id="@+id/listLayoutPlayBtn"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:layout_marginTop="55dp"
+                        android:layout_marginTop="65dp"
                         android:layout_centerHorizontal="true"
                         android:backgroundTint="@color/white"
                         android:layout_marginLeft="10dp"
@@ -110,7 +127,7 @@
                         android:id="@+id/listLayoutBtnNext"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:layout_marginTop="60dp"
+                        android:layout_marginTop="70dp"
                         android:layout_toRightOf="@+id/listLayoutPlayBtn"
                         android:background="@drawable/ic_next"
                         app:backgroundTint="@null"/>
@@ -119,7 +136,7 @@
                         android:id="@+id/listLayoutBtnPrevious"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:layout_marginTop="60dp"
+                        android:layout_marginTop="70dp"
                         android:layout_toLeftOf="@id/listLayoutPlayBtn"
                         android:background="@drawable/ic_previous"
                         app:backgroundTint="@null"/>

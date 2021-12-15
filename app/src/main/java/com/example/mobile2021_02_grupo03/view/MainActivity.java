@@ -73,15 +73,11 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isPermissionGranted(){
         int readExternalStoragePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        //int recordAudioPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-        //int internetPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
         return (readExternalStoragePermission == PackageManager.PERMISSION_GRANTED);
-                // &&(recordAudioPermission == PackageManager.PERMISSION_GRANTED);
-        //&& (internetPermission == PackageManager.PERMISSION_GRANTED);
     }
 
     private void takePermission(){
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE/*, Manifest.permission.RECORD_AUDIO, Manifest.permission.INTERNET*/}, 101);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -89,9 +85,7 @@ public class MainActivity extends AppCompatActivity {
         if(grantResults.length > 0){
             if(requestCode == 101){
                 boolean readExternalStorage = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                //boolean recordAudio = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                //boolean internet = grantResults[2] == PackageManager.PERMISSION_GRANTED;
-                if(readExternalStorage /*&& recordAudio*/ /*&& internet*/){
+                if(readExternalStorage){
                     takePermissions();
                 }else{
                     takePermission();

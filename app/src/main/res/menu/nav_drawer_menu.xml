@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/nav_item_all_musics"
-        android:title="Todas as músicas" />
+        android:title="@string/all_songs" />
     <item android:id="@+id/nav_item_recent_musics"
-        android:title="Músicas recentes" />
+        android:title="@string/recent_songs" />
     <item android:id="@+id/nav_item_streaming_musics"
-        android:title="Músicas via Streaming" />
+        android:title="@string/streaming_songs" />
+    <item android:id="@+id/nav_item_favorite_musics"
+        android:title="@string/favorite_songs" />
     <item android:id="@+id/nav_item_four"
         android:title="Sair" />
 </menu>
